@@ -17,3 +17,4 @@ This document describes the workflow for this project.
     This will apply all migrations to the database.
 
 ## Frontend Workflow
+1. 
