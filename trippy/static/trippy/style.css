@@ -1,0 +1,15 @@
+body{
+    font-family: Inconsolata, monospace;
+    background-color: #fff;
+    padding-bottom: 2.5em;
+}
+
+.center-body{
+    margin: auto;
+    width: 85%;
+}
+
+#name{
+    font-size: 2em;
+    color: #000;
+}
