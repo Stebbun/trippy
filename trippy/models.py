@@ -37,6 +37,13 @@ class Transportation(models.Model):
 	DestLocationId = models.ForeignKey('Location', on_delete=models.CASCADE,related_name='Dest_%(class)s', default=0)
 
 class Flight(models.Model):
+	ONE_WAY = '1'
+	ROUND_TRIP = '2'
+	FLIGHT_TYPE_LIST = (
+		(ONE_WAY, "One Way"),
+		(ROUND_TRIP, "Round Trip")
+	)
+
 	FIRST = "FIR"
 	BUSINESS = "BUS"
 	ECONOMY = "ECO"
