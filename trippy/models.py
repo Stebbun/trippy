@@ -61,8 +61,11 @@ class Flight(models.Model):
 		('6', 6),
 	]
 	AIRPORT_LIST = [
-		("JFK", "JFK Airport"),
-		("NEW", "Newark Interntational Airport"),
+		("JFK", "John F. Kennedy International Airport"),
+		("PEK", "Beijing Capital International Airport"),
+		("LAX", "Los Angeles International Airport"),
+		("ICN", "Seoul Incheon International Airport"),
+		("SIN", "Singapore Changi Airport")
 	]
 	FlightNumber = models.IntegerField()
 	FlightCarrier = models.CharField(max_length=30)
