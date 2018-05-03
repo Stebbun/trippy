@@ -1,5 +1,6 @@
 from django.shortcuts import render
-from .forms import FlightForm, RegistrationForm
+from .forms import FlightForm, CruiseForm, RegistrationForm
+
 
 # Create your views here.
 def index(request):
@@ -18,7 +19,13 @@ def flights(request):
     return render(request, 'trippy/flights.html', {'form' : form})
 
 def cruises(request):
-    return render(request, 'trippy/cruises.html')
+    if request.method == 'POST':
+        form = CruiseForm(request.POST)
+        if form.is_valid():
+            pass
+    else:
+        form = CruiseForm()
+    return render(request, 'trippy/cruises.html', {'form' : form})
 
 def rentals(request):
     return render(request, 'trippy/rentals.html')
