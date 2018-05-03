@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .forms import FlightForm, CruiseForm, RegistrationForm
+from .forms import FlightForm, CruiseForm, RegistrationForm, HotelForm
 
 
 # Create your views here.
@@ -7,7 +7,13 @@ def index(request):
     return render(request, 'trippy/index.html')
 
 def hotels(request):
-    return render(request, 'trippy/hotels.html')
+    if request.method == 'POST':
+        form = HotelForm(request.POST)
+        if form.is_valid():
+            pass
+    else:
+        form = HotelForm()
+    return render(request, 'trippy/hotels.html', {'form' : form})
 
 def flights(request):
     if request.method == 'POST':
