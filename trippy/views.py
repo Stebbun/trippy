@@ -17,8 +17,8 @@ def flights(request):
         form = FlightForm()
     return render(request, 'trippy/flights.html', {'form' : form})
 
-def buses(request):
-    return render(request, 'trippy/buses.html')
+def cruises(request):
+    return render(request, 'trippy/cruises.html')
 
 def rentals(request):
     return render(request, 'trippy/rentals.html')

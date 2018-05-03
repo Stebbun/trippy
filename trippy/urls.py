@@ -6,7 +6,7 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('hotels/', views.hotels, name='hotels'),
     path('flights/', views.flights, name='flights'),
-    path('buses/', views.buses, name='buses'),
+    path('cruises/', views.cruises, name='cruises'),
     path('rentals/', views.rentals, name='rentals'),
     path('packages/', views.packages, name='packages'),
 ]
