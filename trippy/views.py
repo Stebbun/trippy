@@ -46,14 +46,7 @@ def payment(request):
     if request.method == 'POST':
         form = PaymentForm(request.POST)
         if form.is_valid():
-<<<<<<< HEAD
             print("valid")
         else:
             form = PaymentForm()
     return render(request, 'trippy/payment.html', {'form' : form})
-=======
-            pass
-    else:
-        form = RegistrationForm()
-    return render(request, 'trippy/register.html', {'form' : form})
->>>>>>> cb20eafde5e8168f497ee8b299f026b9e667b189
