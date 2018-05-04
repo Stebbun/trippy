@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .forms import FlightForm, CruiseForm, PaymentForm
+from .forms import FlightForm, CruiseForm, PaymentForm, RegistrationForm, HotelForm
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login, authenticate
 
@@ -9,7 +9,13 @@ def index(request):
     return render(request, 'trippy/index.html')
 
 def hotels(request):
-    return render(request, 'trippy/hotels.html')
+    if request.method == 'POST':
+        form = HotelForm(request.POST)
+        if form.is_valid():
+            pass
+    else:
+        form = HotelForm()
+    return render(request, 'trippy/hotels.html', {'form' : form})
 
 def flights(request):
     if request.method == 'POST':
@@ -40,7 +46,14 @@ def payment(request):
     if request.method == 'POST':
         form = PaymentForm(request.POST)
         if form.is_valid():
+<<<<<<< HEAD
             print("valid")
         else:
             form = PaymentForm()
     return render(request, 'trippy/payment.html', {'form' : form})
+=======
+            pass
+    else:
+        form = RegistrationForm()
+    return render(request, 'trippy/register.html', {'form' : form})
+>>>>>>> cb20eafde5e8168f497ee8b299f026b9e667b189

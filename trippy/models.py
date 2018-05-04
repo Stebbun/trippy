@@ -18,6 +18,33 @@ class Accomodation(models.Model):
 		(HOSTEL, 'Hostel'),
 		(MOTEL, 'Motel'),
 	]
+	NUM_ROOM_LIST = [
+		('1', 1),
+		('2', 2),
+		('3', 3),
+		('4', 4),
+		('5', 5),
+		('6', 6),
+	]
+	NUM_GUEST_LIST = [
+		('1', 1),
+		('2', 2),
+		('3', 3),
+		('4', 4),
+		('5', 5),
+		('6', 6),
+		('7', 7),
+		('8', 8),
+		('9', 9),
+		('10', 10),
+		('11', 11),
+		('12', 12),
+	]
+	LOCATION_LIST = [
+		("New-York", "New York"),
+		("Seattle", "Seattle"),
+		("San-Francisco", "San-Francisco"),
+	]
 	Rate = models.DecimalField(max_digits=9, decimal_places=2)
 	Discount = models.DecimalField(max_digits=2,decimal_places = 2)
 	LocationId = models.ForeignKey('Location', on_delete=models.CASCADE)

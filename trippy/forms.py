@@ -1,13 +1,13 @@
 from datetime import datetime, date, timedelta
 from django import forms
-from .models import Flight, Cruise, Payment
+from .models import Flight, Cruise, Payment, Passenger, Accomodation
 from django.core import validators
 from django.contrib.auth.models import User
 
 class FlightForm(forms.Form):
     flight_type = forms.ChoiceField(choices=Flight.FLIGHT_TYPE_LIST)
-    num_tickets = forms.ChoiceField(choices=Flight.NUM_TICKET_LIST)
     flight_class = forms.ChoiceField(choices=Flight.FLIGHT_CLASS_LIST)
+    num_tickets = forms.ChoiceField(choices=Flight.NUM_TICKET_LIST)
     source_location = forms.TypedChoiceField(choices=Flight.AIRPORT_LIST)
     dest_location = forms.TypedChoiceField(choices=Flight.AIRPORT_LIST)
     arrive_date = forms.DateField(initial=datetime.now())
@@ -28,7 +28,22 @@ class FlightForm(forms.Form):
             raise forms.ValidationError('Invalid input!')
 
 class HotelForm(forms.Form):
-    pass
+    num_rooms = forms.ChoiceField(label="Rooms", choices=Accomodation.NUM_ROOM_LIST)
+    num_guests = forms.ChoiceField(label="Guests", choices=Accomodation.NUM_GUEST_LIST)
+    location = forms.ChoiceField(label="Location", choices=Accomodation.LOCATION_LIST)
+    check_in_date = forms.DateField(label="Check-In Date", initial=datetime.date.today)
+    check_out_date = forms.DateField(label="Check-Out Date", initial=datetime.date.today)
+
+    def clean(self):
+        cleaned_data = super(HotelForm, self).clean()
+        num_rooms = cleaned_data.get('num_rooms')
+        num_guests = cleaned_data.get('num_guests')
+        location = cleaned_data.get('location')
+        check_in_date = cleaned_data.get('check_in_date')
+        check_out_date = cleaned_data.get('check_out_date')
+        if not (num_rooms or num_guests or location or check_in_date
+                or check_out_date):
+            raise forms.ValidationError('Invalid input')
 
 class CruiseForm(forms.Form):
     num_tickets = forms.ChoiceField(choices=Cruise.NUM_TICKET_LIST)
