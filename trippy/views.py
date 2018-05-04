@@ -1,5 +1,7 @@
-from django.shortcuts import render
-from .forms import FlightForm, CruiseForm, RegistrationForm
+from django.shortcuts import render, redirect
+from .forms import FlightForm, CruiseForm, PaymentForm
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import login, authenticate
 
 
 # Create your views here.
@@ -33,11 +35,12 @@ def rentals(request):
 def packages(request):
     return render(request, 'trippy/packages.html')
 
-def register(request):
+def payment(request):
+    form = PaymentForm(request.POST or None)
     if request.method == 'POST':
-        form = RegistrationForm(request.POST)
+        form = PaymentForm(request.POST)
         if form.is_valid():
-            pass
-    else:
-        form = RegistrationForm()
-    return render(request, 'trippy/register.html', {'form' : form})
+            print("valid")
+        else:
+            form = PaymentForm()
+    return render(request, 'trippy/payment.html', {'form' : form})

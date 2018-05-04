@@ -106,10 +106,10 @@ class Passenger(models.Model):
 	FirstName = models.CharField(max_length=30)
 	LastName = models.CharField(max_length=30)
 	Email = models.EmailField()
-	Gender = (
+	Gender = [
 		("F", "Female"),
 		("M", "Male"),
-	)
+	]
 	isLeader = models.BooleanField()
 
 
