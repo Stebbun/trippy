@@ -7,6 +7,9 @@ class Location(models.Model):
 	State = models.CharField(max_length=30)
 	Country = models.CharField(max_length=30)
 
+	def __str__(self):
+		return self.City
+
 class Accomodation(models.Model):
 	HOTEL = 'HOT'
 	INN = 'INN'
@@ -53,52 +56,30 @@ class Transportation(models.Model):
 	FLIGHT = 'FLI'
 	CAR = 'CAR'
 	CRUISE = 'CRU'
-	Transport_Type = [
-		(FLIGHT, 'Flight'),
-		(CAR, 'Car Rental'),
-		(CRUISE, 'Cruise'),
+	Transport_Choices = [
+		('Flight', 'Flight'),
+		('Car', 'Car Rental'),
+		('Cruise', 'Cruise'),
 	]
-	Date = models.DateField(default= timezone.now)
-	SourceLocationId = models.ForeignKey('Location', on_delete=models.CASCADE,
-		related_name='Src_%(class)s')
-	DestLocationId = models.ForeignKey('Location', on_delete=models.CASCADE,related_name='Dest_%(class)s', default=0)
+	Transport_Type = models.CharField(max_length=10, choices=Transport_Choices, null=True)
+
+	def __str__(self):
+		return self.Transport_Type + " " + str(self.pk)
 
 class Flight(models.Model):
-	ONE_WAY = '1'
-	ROUND_TRIP = '2'
-	FLIGHT_TYPE_LIST = [
-		(ONE_WAY, "One Way"),
-		(ROUND_TRIP, "Round Trip")
-	]
-
-	FIRST = "FIR"
-	BUSINESS = "BUS"
-	ECONOMY = "ECO"
-	FLIGHT_CLASS_LIST = [
-		(FIRST, "First Class"),
-		(BUSINESS, "Business Class"),
-		(ECONOMY, 'Economy Class'),
-	]
-	NUM_TICKET_LIST = [
-		('1', 1),
-		('2', 2),
-		('3', 3),
-		('4', 4),
-		('5', 5),
-		('6', 6),
-	]
-	AIRPORT_LIST = [
-		("JFK", "John F. Kennedy International Airport"),
-		("PEK", "Beijing Capital International Airport"),
-		("LAX", "Los Angeles International Airport"),
-		("ICN", "Seoul Incheon International Airport"),
-		("SIN", "Singapore Changi Airport")
-	]
-	FlightNumber = models.IntegerField()
+	FlightNumber = models.CharField(max_length=10)
 	FlightCarrier = models.CharField(max_length=30)
 	FlightPrice = models.DecimalField(max_digits=10, decimal_places=2)
+	DepartureTime = models.DateTimeField(default=timezone.now)
+	DepartureAirport = models.ForeignKey('Airport', on_delete=models.CASCADE, related_name='Dest_%(class)s', default=0)
+	ArrivalTime = models.DateTimeField(default=timezone.now)
+	ArrivalAirport = models.ForeignKey('Airport', on_delete=models.CASCADE, default = 0)
 	TransportId = models.OneToOneField('Transportation', primary_key=True, on_delete=models.CASCADE)
 
+	def __str__(self):
+		depart = str(self.DepartureTime.date()) + " " + str(self.DepartureTime.hour) + ":" + str(self.DepartureTime.minute)
+		arrive = str(self.ArrivalTime.date()) + " " + str(self.ArrivalTime.hour) + ":" + str(self.ArrivalTime.minute)
+		return str(self.DepartureAirport) + "[" + depart + "] to " + str(self.ArrivalAirport) + "[" + arrive + "]"
 
 class CarRental(models.Model):
 	TransportId = models.OneToOneField('Transportation', primary_key=True, on_delete=models.CASCADE)
@@ -139,9 +120,16 @@ class Passenger(models.Model):
 	]
 	isLeader = models.BooleanField()
 
-
 class Payment(models.Model):
 	GroupLeaderId = models.ForeignKey('Passenger', on_delete = models.CASCADE)
 	CardNumber = models.IntegerField()
 	PaymentAmount = models.DecimalField(max_digits=10, decimal_places=2)
 	CardExpiryDate = models.DateField()
+
+class Airport(models.Model):
+	AirportCode = models.CharField(max_length=3)
+	AirportName = models.CharField(max_length=100)
+	LocationId = models.ForeignKey('Location', on_delete=models.CASCADE)
+
+	def __str__(self):
+		return self.AirportName + " (" + self.AirportCode +")"

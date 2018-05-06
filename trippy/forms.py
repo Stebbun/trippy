@@ -1,17 +1,31 @@
 from datetime import datetime, date, timedelta
+from django.utils import timezone
 from django import forms
-from .models import Flight, Cruise, Payment, Passenger, Accomodation
+from .models import Flight, Cruise, Payment, Passenger, Accomodation, Airport
 from django.core import validators
-from django.contrib.auth.models import User
 
 class FlightForm(forms.Form):
-    flight_type = forms.ChoiceField(choices=Flight.FLIGHT_TYPE_LIST)
-    flight_class = forms.ChoiceField(choices=Flight.FLIGHT_CLASS_LIST)
-    num_tickets = forms.ChoiceField(choices=Flight.NUM_TICKET_LIST)
-    source_location = forms.TypedChoiceField(choices=Flight.AIRPORT_LIST)
-    dest_location = forms.TypedChoiceField(choices=Flight.AIRPORT_LIST)
-    arrive_date = forms.DateField(initial=datetime.now())
-    return_date = forms.DateField(initial=datetime.now() + timedelta(days=1))
+    flight_type = forms.ChoiceField(choices=[
+        ('One Way', "One Way"),
+        ('Round Trip', "Round Trip")
+    ])
+    flight_class = forms.ChoiceField(choices=[
+        ("First Class", "First Class"),
+        ("Business Class", "Business Class"),
+        ("Economy Class", 'Economy Class'),
+    ])
+    num_tickets = forms.ChoiceField(choices=[
+        ('1', 1),
+        ('2', 2),
+        ('3', 3),
+        ('4', 4),
+        ('5', 5),
+        ('6', 6),
+    ])
+    source_location = forms.ModelChoiceField(queryset = Airport.objects.all(), empty_label=None, to_field_name="AirportName")
+    dest_location = forms.ModelChoiceField(queryset = Airport.objects.all(), empty_label=None, to_field_name="AirportName")
+    arrive_date = forms.DateField(initial=timezone.now)
+    return_date = forms.DateField(initial=timezone.now)
 
     def clean(self):
         cleaned_data = super(FlightForm, self).clean()
@@ -25,14 +39,19 @@ class FlightForm(forms.Form):
         if not (flight_type or num_tickets or flight_class
                 or source_location or dest_location or arrive_date
                 or return_date):
-            raise forms.ValidationError('Invalid input!')
+            raise forms.ValidationError('Invalid value', code='invalid')
+        if source_location == dest_location:
+            raise forms.ValidationError('Source and Destination must be different', code='invalid')
+
+    def result(self):
+        return [self['source_location']]
 
 class HotelForm(forms.Form):
     num_rooms = forms.ChoiceField(label="Rooms", choices=Accomodation.NUM_ROOM_LIST)
     num_guests = forms.ChoiceField(label="Guests", choices=Accomodation.NUM_GUEST_LIST)
     location = forms.ChoiceField(label="Location", choices=Accomodation.LOCATION_LIST)
-    check_in_date = forms.DateField(label="Check-In Date", initial=datetime.date.today)
-    check_out_date = forms.DateField(label="Check-Out Date", initial=datetime.date.today)
+    check_in_date = forms.DateField(label="Check-In Date", initial=datetime.now())
+    check_out_date = forms.DateField(label="Check-Out Date", initial=datetime.now())
 
     def clean(self):
         cleaned_data = super(HotelForm, self).clean()
@@ -92,5 +111,4 @@ class PaymentForm(forms.ModelForm):
         expiry_date = cleaned_data.get('CardExpiryDate')
         if not (first_name or last_name or email or card_number
                 or payment_amount or expiry_date):
-            print("no input")
             raise forms.ValidationError('Invalid input')

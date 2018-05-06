@@ -1,1 +1,50 @@
-{% extends "trippy/base-form.html" %}
+{% extends "trippy/base.html" %}
+
+{% block content %}
+    {% load widget_tweaks %}
+    <form method="post" novalidate>
+    {% csrf_token %}
+
+
+    <script type="text/javascript">
+
+	function roundtripCheck() {
+    	if (document.getElementById('id_flight_type').value == "Round Trip") {
+        	document.getElementById('return_info').style.display = 'block';
+    	}
+    	else document.getElementById('return_info').style.display = 'none';
+	}
+
+</script>
+    <div class = "form-group">
+    	{{ form.flight_type.label_tag }}
+    	{% render_field form.flight_type class="form-control" onchange="javascript:roundtripCheck()" %}
+    </div>
+    <div class = "form-group">
+    	{{ form.flight_class.label_tag }}
+    	{% render_field form.flight_class class="form-control" %}
+    </div>
+    <div class = "form-group">
+    	{{ form.num_tickets.label_tag }}
+    	{% render_field form.num_tickets class="form-control" %}
+    </div>
+    <div class = "form-group">
+    	{{ form.source_location.label_tag }}
+    	{% render_field form.source_location class="form-control" %}
+    </div>
+    <div class = "form-group">
+    	{{ form.dest_location.label_tag }}
+    	{% render_field form.dest_location class="form-control" %}
+    </div>
+    <div class = "form-group">
+    	<label> Departure Date: </label>
+    	{% render_field form.arrive_date class="form-control" %}
+    </div>
+    <div class = "form-group" id="return_info" style="display:none">
+    	{{ form.return_date.label_tag }}
+    	{% render_field form.return_date class="form-control" %}
+    </div>
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+{% endblock %}

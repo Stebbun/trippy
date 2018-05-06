@@ -1,0 +1,47 @@
+{% extends "trippy/base.html" %}
+
+{% block content %}
+    {% load widget_tweaks %}
+    {% csrf_token %}
+
+    <div class="row">
+        <div style="float: left; width: 50%">
+        <h5>Flight Type</h5>
+        {{ form.flight_type.data }} <br>
+        <h5>Departure Information</h5>
+        {{ form.arrive_date.data }} <br>
+        {{ form.source_location.data }}
+    	</div>
+    	<div style="float: left; width: 50%">
+    	<h5>Ticket Type</h5>
+        {{ form.flight_class.data }}<br>
+        {% if form.flight_type.data != 'One Way' %}
+            <h5>Return Information</h5>
+            {{ form.return_date.data }} <br>
+            {{ form.dest_location.data }} <br>
+        {% endif %}
+    	</div>
+    </div>
+
+    <br>
+    <div class="row" style="float: center">
+        <h2> Departing Flights</h2> <br>
+        {% for flight in flights %}
+        <div style="width: 100%">
+            <br>
+            <div style="float: left; width: 70%"> 
+                {{ flight.FlightCarrier }} <br>
+                {{ flight.FlightNumber }} <br>
+                {{ flight.DepartureTime }} - {{ flight.ArrivalTime}}
+            </div>
+            <div style="float: right; text-align: center; width: 30%"> 
+                <br>
+                <h5> ${{ flight.FlightPrice }} </h5> 
+            </div>
+
+        </div>
+        {% endfor %}
+    </div>
+
+
+{% endblock %}

@@ -1,7 +1,9 @@
 from django.shortcuts import render, redirect
-from .forms import FlightForm, CruiseForm, PaymentForm, RegistrationForm, HotelForm
+from django.template import RequestContext
+from .forms import FlightForm, CruiseForm, PaymentForm, HotelForm
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login, authenticate
+from .models import Airport, Flight
 
 
 # Create your views here.
@@ -21,7 +23,12 @@ def flights(request):
     if request.method == 'POST':
         form = FlightForm(request.POST)
         if form.is_valid():
-            pass
+            dairport = Airport.objects.filter(AirportName = form['source_location'].data)[0]
+            dflights = Flight.objects.filter(DepartureAirport_id=dairport.pk).filter(DepartureTime__gte=form['arrive_date'].data)
+            aairport = Airport.objects.filter(AirportName = form['dest_location'].data)[0]
+            flights = dflights.filter(ArrivalAirport_id = aairport.pk).values()
+            print(flights[0])
+            return render(request, 'trippy/information.html', {'form': form, 'flights' : flights })
     else:
         form = FlightForm()
     return render(request, 'trippy/flights.html', {'form' : form})
@@ -46,7 +53,10 @@ def payment(request):
     if request.method == 'POST':
         form = PaymentForm(request.POST)
         if form.is_valid():
-            print("valid")
+            pass
         else:
             form = PaymentForm()
     return render(request, 'trippy/payment.html', {'form' : form})
+
+def information(request):
+    return render(request, 'trippy/information.html')
