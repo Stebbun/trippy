@@ -1,6 +1,16 @@
 from django.db import models
 from django.utils import timezone
 
+class IntegerRangeField(models.IntegerField):
+    def __init__(self, verbose_name=None, name=None, min_value=None, max_value=None, **kwargs):
+        self.min_value, self.max_value = min_value, max_value
+        models.IntegerField.__init__(self, verbose_name, name, **kwargs)
+
+    def formfield(self, **kwargs):
+        defaults = {'min_value': self.min_value, 'max_value':self.max_value}
+        defaults.update(kwargs)
+        return super(IntegerRangeField, self).formfield(**defaults)
+
 # Create your models here.
 class Location(models.Model):
 	City = models.CharField(max_length=30)
@@ -69,7 +79,7 @@ class Transportation(models.Model):
 class Flight(models.Model):
 	FlightNumber = models.CharField(max_length=10)
 	FlightCarrier = models.CharField(max_length=30)
-	FlightPrice = models.DecimalField(max_digits=10, decimal_places=2)
+	FlightPrice = models.IntegerField()
 	DepartureTime = models.DateTimeField(default=timezone.now)
 	DepartureAirport = models.ForeignKey('Airport', on_delete=models.CASCADE, related_name='Dest_%(class)s', default=0)
 	ArrivalTime = models.DateTimeField(default=timezone.now)
@@ -83,7 +93,7 @@ class Flight(models.Model):
 
 class CarRental(models.Model):
 	TransportId = models.OneToOneField('Transportation', primary_key=True, on_delete=models.CASCADE)
-	Rate = models.DecimalField(max_digits=10, decimal_places=2)
+	Rate = models.IntegerField()
 	CarType = models.CharField(max_length=30)
 
 class Cruise(models.Model):
@@ -103,7 +113,7 @@ class Cruise(models.Model):
 		("Iceland", "Iceland"),
 	]
 	TransportId = models.OneToOneField('Transportation', primary_key=True, on_delete=models.CASCADE)
-	CruisePrice = models.DecimalField(max_digits=10, decimal_places=2)
+	CruisePrice = models.IntegerField()
 	CruiseNumber = models.IntegerField()
 
 class Group(models.Model):
@@ -123,7 +133,7 @@ class Passenger(models.Model):
 class Payment(models.Model):
 	GroupLeaderId = models.ForeignKey('Passenger', on_delete = models.CASCADE)
 	CardNumber = models.IntegerField()
-	PaymentAmount = models.DecimalField(max_digits=10, decimal_places=2)
+	PaymentAmount = models.IntegerField()
 	CardExpiryDate = models.DateField()
 
 class Airport(models.Model):

@@ -1,47 +1,79 @@
 {% extends "trippy/base.html" %}
 
+
 {% block content %}
     {% load widget_tweaks %}
+    <form method="post" novalidate>
     {% csrf_token %}
 
     <div class="row">
         <div style="float: left; width: 50%">
         <h5>Flight Type</h5>
-        {{ form.flight_type.data }} <br>
+        {{ trip }} <br>
         <h5>Departure Information</h5>
-        {{ form.arrive_date.data }} <br>
-        {{ form.source_location.data }}
+        {{ sdate }} <br>
+        From {{ srcName }} <br>
+        To {{ destName }}
     	</div>
     	<div style="float: left; width: 50%">
     	<h5>Ticket Type</h5>
-        {{ form.flight_class.data }}<br>
-        {% if form.flight_type.data != 'One Way' %}
+        {{ tickets }} {{ ticket_type }}<br>
+        {% if trip != 'One Way' %}
             <h5>Return Information</h5>
-            {{ form.return_date.data }} <br>
-            {{ form.dest_location.data }} <br>
+            {{ rdate }} <br>
+            From {{ destName }} <br>
+            To {{ srcName }}
         {% endif %}
     	</div>
     </div>
 
     <br>
     <div class="row" style="float: center">
+        {% if dflights != None %}
         <h2> Departing Flights</h2> <br>
-        {% for flight in flights %}
+        {% for flight in dflights %}
         <div style="width: 100%">
+            <a href = "/">
             <br>
-            <div style="float: left; width: 70%"> 
+            <div style="float: left; width: 60%">
                 {{ flight.FlightCarrier }} <br>
                 {{ flight.FlightNumber }} <br>
                 {{ flight.DepartureTime }} - {{ flight.ArrivalTime}}
             </div>
             <div style="float: right; text-align: center; width: 30%"> 
                 <br>
-                <h5> ${{ flight.FlightPrice }} </h5> 
+                <h5> ${% widthratio flight.FlightPrice 1 tickets %} </h5> 
+                <br>
             </div>
-
+            </a>
         </div>
         {% endfor %}
+        {% else %}
+            <h2> No departing flights fit your search </h2>
+        {% endif %}
+        {% if retdate != None %}
+        <h2> Returning Flights </h2> <br>
+        {% for flight in rflights %}
+        <div style="width: 100%">
+            <br>
+            <a href = "/index"> 
+            <div style="float: left; width: 60%">
+                {{ flight.FlightCarrier }} <br>
+                {{ flight.FlightNumber }} <br>
+                {{ flight.DepartureTime }} - {{ flight.ArrivalTime}}
+            </div>
+            <div style="float: right; text-align: center; width: 30%"> 
+                <br>
+                <h5> ${% widthratio flight.FlightPrice 1 tickets %} </h5> 
+            </div>
+        </a>
+        </div>
     </div>
+    {% endfor %}
+    <br>
+    <button type="submit" class="btn btn-primary">Confirm</button>
+    {% endif %}
 
+</form>
 
 {% endblock %}
