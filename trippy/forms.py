@@ -25,8 +25,8 @@ class FlightForm(forms.Form):
         ('5', 5),
         ('6', 6),
     ])
-    source_location = forms.ModelChoiceField(queryset = Airport.objects.all(), empty_label=None, to_field_name="AirportName")
-    dest_location = forms.ModelChoiceField(queryset = Airport.objects.all(), empty_label=None, to_field_name="AirportName")
+    source_location = forms.ModelChoiceField(label='Origin',queryset = Airport.objects.all(), empty_label=None, to_field_name="AirportName")
+    dest_location = forms.ModelChoiceField(label='Destination',queryset = Airport.objects.all(), empty_label=None, to_field_name="AirportName")
     arrive_date = forms.DateField(initial=datetime.now())
     return_date = forms.DateField(initial=datetime.now() + timedelta(days=5))
 
@@ -90,7 +90,7 @@ class AccomodationForm(forms.Form):
                 or check_out_date):
             raise forms.ValidationError('Invalid input')
         if check_in_date >= check_out_date:
-            raise forms.ValidationError('You must choose a date later than the departure date')
+            raise forms.ValidationError('You must choose a check-out date later than the check-in date')
         if num_rooms > num_guests:
             raise forms.ValidationError('Number of rooms can\'t exceed the number of guests')
 '''

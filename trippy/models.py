@@ -82,13 +82,16 @@ class Passenger(models.Model):
 	], default='F')
 
 	def __str__(self):
-		return FirstName + LastName
+		return self.FirstName + self.LastName
 
 class Payment(models.Model):
 	GroupId = models.ForeignKey('Group', on_delete = models.CASCADE, default=0)
 	CardNumber = models.CharField(max_length=16)
 	PaymentAmount = models.IntegerField()
 	CardExpiryDate = models.CharField(max_length=5)
+
+	def __str__(self):
+		return 'Group ' + str(self.GroupId.pk) + ' ('+ self.CardNumber[-4:] + " $" + str(self.PaymentAmount)+')'
 
 class Airport(models.Model):
 	AirportCode = models.CharField(max_length=3)
@@ -97,3 +100,9 @@ class Airport(models.Model):
 
 	def __str__(self):
 		return self.AirportName + " (" + self.AirportCode +")"
+
+class CarRentalTime(models.Model):
+	Car = models.ForeignKey('CarRental', on_delete = models.CASCADE)
+	Driver = models.ForeignKey('Passenger', on_delete = models.CASCADE)
+	StartRentalTime = models.DateField(default=timezone.now)
+	EndRentalTime = models.DateField(default=timezone.now)
