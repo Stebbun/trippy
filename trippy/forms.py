@@ -143,29 +143,29 @@ class RentalForm(forms.Form):
         if pickup_date > dropoff_date:
             raise forms.ValidationError('You must pick a valid dropoff date')
 
-class PackageForm(forms.Form):
-    flight_class = forms.ChoiceField(choices=[
-        ("First Class", "First Class"),
-        ("Business Class", "Business Class"),
-        ("Economy Class", 'Economy Class'),
-    ])
-    source_location = forms.ModelChoiceField(queryset = Airport.objects.all(), empty_label=None, to_field_name="AirportName")
-    dest_location = forms.ModelChoiceField(queryset = Airport.objects.all(), empty_label=None, to_field_name="AirportName")
-    arrive_date = forms.DateField(initial=timezone.now)
-    return_date = forms.DateField(initial=datetime.now() + timedelta(days=5))
-    hotel_location = forms.ModelChoiceField(queryset = Location.objects.all(), empty_label=None)
-    check_in_date = forms.DateField(label="Check-In Date", initial=datetime.now())
-    check_out_date = forms.DateField(label="Check-Out Date", initial=datetime.now())
+# class PackageForm(forms.Form):
+#     flight_class = forms.ChoiceField(choices=[
+#         ("First Class", "First Class"),
+#         ("Business Class", "Business Class"),
+#         ("Economy Class", 'Economy Class'),
+#     ])
+#     source_location = forms.ModelChoiceField(queryset = Airport.objects.all(), empty_label=None, to_field_name="AirportName")
+#     dest_location = forms.ModelChoiceField(queryset = Airport.objects.all(), empty_label=None, to_field_name="AirportName")
+#     arrive_date = forms.DateField(initial=timezone.now)
+#     return_date = forms.DateField(initial=datetime.now() + timedelta(days=5))
+#     hotel_location = forms.ModelChoiceField(queryset = Location.objects.all(), empty_label=None)
+#     check_in_date = forms.DateField(label="Check-In Date", initial=datetime.now())
+#     check_out_date = forms.DateField(label="Check-Out Date", initial=datetime.now())
 
-    def clean(self):
-        cleaned_data = super(PackageForm, self).clean()
-        source_location = cleaned_data.get('source_location')
-        dest_location = cleaned_data.get('dest_location')
-        arrive_date = cleaned_data.get('arrive_date')
-        return_date = cleaned_data.get('return_date')
-        hotel_location = cleaned_data.get('hotel_location')
-        check_in_date = cleaned_data.get('check_in_date')
-        check_out_date = cleaned_data.get('check_out_date')
+#     def clean(self):
+#         cleaned_data = super(PackageForm, self).clean()
+#         source_location = cleaned_data.get('source_location')
+#         dest_location = cleaned_data.get('dest_location')
+#         arrive_date = cleaned_data.get('arrive_date')
+#         return_date = cleaned_data.get('return_date')
+#         hotel_location = cleaned_data.get('hotel_location')
+#         check_in_date = cleaned_data.get('check_in_date')
+#         check_out_date = cleaned_data.get('check_out_date')
 
 
 class PaymentForm(forms.Form):
