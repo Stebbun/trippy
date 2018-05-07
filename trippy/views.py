@@ -143,13 +143,32 @@ def payment(request):
                     'price' : price,
                     'pageheader' : header,
                 }
-        linkcont = '&guests='+str(guests)+"&accom="+request.GET.get('accom')+'&rooms='+rooms+'&price='+price+"&checkin="+checkin+"&checkout"
-        +checkout
+        linkcont = '&guests='+str(guests)+"&accom="+str(request.GET.get('accom'))+'&rooms='+str(rooms)+'&price='+str(price)+"&checkin="+str(checkin)+"&checkout=" +str(checkout)
+    elif rtype == 'rental':
+        src = request.GET.get('src')
+        dest = request.GET.get('dest')
+        srcdate = request.GET.get('srcdate')
+        retdate = request.GET.get('retdate')
+        duration = (strtoDate(retdate)-strtoDate(srcdate)).days
+        rental_req = request.GET.get('rental')
+        rental = CarRental.objects.filter(pk=rental_req)[0]
+        price = duration * rental.Rate
+        context = {
+            'rtype' : rtype,
+            'src' : src,
+            'dest' : dest,
+            'srcdate' : srcdate,
+            'retdate' : retdate,
+            'rental' : rental,
+            'price' : price,
+            'pageheader' : header,
+        }
+        linkcont = '&src='+src+'&dest='+dest+'&srcdate='+srcdate+'&retdate='+retdate+'&rental='+rental_req+'&price='+str(price)
     if request.method == 'POST':
         form = PaymentForm(request.POST)
         if form.is_valid():
             groupid = int(request.GET.get('groupid'))
-            pay = Payment(GroupId_id =groupid, CardNumber=form['card_number'].data, PaymentAmount=price,
+            pay = Payment(GroupId_id=groupid, CardNumber=form['card_number'].data, PaymentAmount=price,
                 CardExpiryDate=form['card_expiry_date'].data)
             pay.save()
             link = '/confirmation/?type='+rtype + linkcont+'&paymentid='+str(pay.pk)+'&groupid='+str(groupid)
@@ -259,6 +278,8 @@ def information_rental(request, rtype):
     pickup_location = Location.objects.filter(pk=req_pickup_location)[0]
     dropoff_location = Location.objects.filter(pk=req_dropoff_location)[0]
 
+    duration = (strtoDate(req_dropoff_date)-strtoDate(req_pickup_date)).days
+
     rentals = CarRental.objects.filter(Location_id=pickup_location.pk)
     if len(rentals) == 0:
         rentals = None
@@ -272,7 +293,8 @@ def information_rental(request, rtype):
         'pickup' : pickup_location,
         'dropoff' : dropoff_location,
         'pageheader' : header,
-        'rentals' : rentals
+        'rentals' : rentals,
+        'duration' : duration
     }
     return context
 
@@ -323,6 +345,7 @@ def passenger(request):
                     group = group.pk
                 else:
                     group = int(request.GET.get('groupid'))
+
                 passenger = Passenger(FirstName=form['first_name'].data, LastName=form['last_name'].data, Email=form['email'].data, Gender=form['gender'].data, GroupId_id=group)
                 passenger.save()
                 if num == int(guests):
@@ -332,6 +355,20 @@ def passenger(request):
                     num+=1
                     link='/passenger/?type='+rtype+'&rooms='+rooms+"&guests"+guests+'&checkin='+checkin+'&checkout='+checkout+'&accom='+accom+'&num='+str(num)+'&groupid='+str(group)
                     return redirect(link)
+        elif rtype == 'rental':
+            form = PassengerForm(request.POST)
+            src = request.GET.get('src')
+            dest = request.GET.get('dest')
+            srcdate = request.GET.get('srcdate')
+            retdate = request.GET.get('retdate')
+            rental = request.GET.get('rental')
+            if form.is_valid():
+                group = Group(size=1)
+                group.save()
+                passenger = Passenger(FirstName=form['first_name'].data, LastName=form['last_name'].data, Email=form['email'].data, Gender=form['gender'].data, GroupId_id=group.pk)
+                passenger.save()
+                link = '/payment/?type='+rtype+'&src='+src+'&dest='+dest+'&srcdate='+srcdate+'&retdate='+retdate+'&rental='+rental+'&groupid='+str(group.pk)
+                return redirect(link)
     else:
         form = PassengerForm()
     return render(request, 'trippy/passenger.html', {'form' : form, 'pageheader' : header,})
@@ -374,6 +411,22 @@ def confirmation(request):
             'price' : request.GET.get('price'),
             'checkin' : request.GET.get('checkin'),
             'checkout' : request.GET.get('checkout'),
+            'paymentid' : request.GET.get('paymentid'),
+            'passengers' : passengers,
+            'pageheader' : header,
+        }
+    elif rtype == 'rental':
+        rental = int(request.GET.get('rental'))
+        rental = CarRental.objects.filter(pk=rental)[0]
+        print(rental)
+        context = {
+            'rtype' : rtype,
+            'src' : request.GET.get('src'),
+            'dest' : request.GET.get('dest'),
+            'srcdate' : request.GET.get('srcdate'),
+            'retdate' : request.GET.get('retdate'),
+            'rental' : rental,
+            'price' : request.GET.get('price'),
             'paymentid' : request.GET.get('paymentid'),
             'passengers' : passengers,
             'pageheader' : header,

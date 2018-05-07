@@ -154,7 +154,23 @@
     <br>
     <div class="row" style="float: center">
         {% if rentals != None %}
-
+            <h2> Select a Rental Option</h2> <br>
+            {% for rental in rentals %}
+            <div style="width: 100%">
+                <a href = "/passenger/?type=rental&src={{src}}&dest={{dest}}&srcdate={{srcdate}}&retdate={{retdate}}&rental={{rental.pk}}">
+                <br>
+                <div style="float: left; width: 60%">
+                    <h5>{{ rental.CarType }} </h5>
+                    {{ rental.Location }} <br>
+                </div>
+                <div style="float: right; text-align: center; width: 30%">
+                    <h5>Total</h5>
+                    <h5> ${% widthratio rental.Rate 1 duration %} </h5>
+                    <br>
+                </div>
+                </a>
+            </div>
+            {% endfor %}
         {% else %}
             <h2> No Rentals fit your search criteria </h2><br>
             <h3> Please go back and change your search criteria to find available Rentals <h3><br>

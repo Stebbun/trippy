@@ -32,7 +32,22 @@
     	{{ context.rooms }} Rooms for {{context.guests}} Guests <br>
     	Check In Date: {{ context.checkin}} <br>
     	Check Out Date: {{ context.checkout}}<br>
+    {% elif context.rtype == 'rental' %}
+        <h3> Customer Information </h3>
+        {% for passenger in context.passengers %}
+    	{{passenger.LastName}} {{passenger.FirstName}}		{{passenger.Email}}
+    	{% endfor %}
+        <br>
+        <h3> Rental Information </h3>
+        {{ context.rental }} <br>
+        Check In Date: {{ context.srcdate}} <br>
+        Check Out Date: {{ context.retdate }}<br>
     {% endif %}
         	<h3> Amount Paid </h3>
     	${{ context.price}}
+
+        <br>
+        <div class="row" style="float: center; margin-left: 0.08em;">
+            <a href='/'><h3>Return to Home Page</h3></a>
+        </div>
 {% endblock %}

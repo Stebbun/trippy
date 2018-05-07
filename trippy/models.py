@@ -62,7 +62,7 @@ class CarRental(models.Model):
 	Location = models.ForeignKey('Location', on_delete=models.CASCADE, default=0)
 
 	def __str__(self):
-		return str(self.pk) + " " + self.CarType + " $" + str(self.Rate) + str(self.Location)
+		return str(self.pk) + " " + self.CarType + " $" + str(self.Rate) + " " + str(self.Location)
 
 
 '''
