@@ -1,5 +1,29 @@
 {% extends "trippy/base.html" %}
+{% load static %}
 
 {% block content %}
+    <div class="center-body">
+        <img src="{% static 'trippy/trippy_white.png' %}">
+    </div>
 
+    <section>
+        <h2>About</h2>
+        <p>
+        Our mission at Trippy is to provide a <mark class="bear-puns">beary</mark> good travel experience.
+        Our selected team of professional developers, designers, and travel agents will
+        personally cater to your user and travel needs.
+        </p>
+        <br>
+
+        <p>
+            Here at <mark class="trippy-color">Trippy</mark>, we make planning your trip a little more
+             <mark class="bear-puns">bearable</mark>.
+        </p>
+
+        <h2>Founders</h2>
+        <ul>
+            <li>Steven Li</li>
+            <li>Tina Zheng</li>
+        </ul>
+    </section>
 {% endblock %}

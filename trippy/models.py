@@ -60,11 +60,13 @@ class CarRental(models.Model):
 	Rate = models.IntegerField()
 	CarType = models.CharField(max_length=30)
 
+'''
 class Cruise(models.Model):
-	CruisePrice = models.IntegerField() 
+	CruisePrice = models.IntegerField()
 	CruiseNumber = models.IntegerField()
 	DepartureTime = models.DateTimeField(default=timezone.now)
 	TransportId = models.OneToOneField('Transportation', primary_key=True, on_delete=models.CASCADE)
+'''
 
 class Group(models.Model):
 	size = models.IntegerField()

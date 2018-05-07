@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.template import RequestContext
-from .forms import FlightForm, CruiseForm, PaymentForm, AccomodationForm, PassengerForm, RentalForm, PackageForm
+from .forms import FlightForm, PaymentForm, AccomodationForm, PassengerForm, RentalForm, PackageForm
 from .models import Airport, Flight, Passenger, Group, Location, Accomodation, Payment
 import datetime
 
@@ -51,6 +51,7 @@ def flights(request):
         form = FlightForm()
     return render(request, 'trippy/flights.html', {'form' : form, 'pageheader' : header})
 
+'''
 def cruises(request):
     header = 'Cruises'
     if request.method == 'POST':
@@ -60,6 +61,7 @@ def cruises(request):
     else:
         form = CruiseForm()
     return render(request, 'trippy/cruises.html', {'form' : form, 'pageheader' : header})
+'''
 
 def rentals(request):
     header = 'Car Rentals'
