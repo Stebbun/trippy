@@ -9,6 +9,14 @@ body{
     width: 60%;
 }
 
+mark.bear-puns{
+    background-color: #fcf8e3;
+}
+
+mark.trippy-color{
+    background-color: #db8c8c;
+}
+
 #name{
     font-size: 2em;
     color: #000;

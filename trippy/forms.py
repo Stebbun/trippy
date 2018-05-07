@@ -1,7 +1,7 @@
 from datetime import datetime, date, timedelta
 from django.utils import timezone
 from django import forms
-from .models import Flight, Cruise, Payment, Passenger, Accomodation, Airport, Location
+from .models import Flight, Payment, Passenger, Accomodation, Airport, Location
 from django.core import validators
 
 card_validator = validators.RegexValidator(r"\d{16}", "Your credit card must have 16 digits")
@@ -96,6 +96,8 @@ class AccomodationForm(forms.Form):
         if num_rooms*4 > num_guests:
             raise forms.ValidationError('Max number of guests per room is four')
 
+'''
+>>>>>>> c179aace52d56d85442235ab419f806f47d8ae4e
 class CruiseForm(forms.Form):
     num_tickets = forms.ChoiceField(choices=[
         ('1', 1),
@@ -122,6 +124,7 @@ class CruiseForm(forms.Form):
             raise forms.ValidationError('Invalid input')
         if source_location == dest_location:
             raise forms.ValidationError('Source and Destination must be different', code='invalid')
+'''
 
 class RentalForm(forms.Form):
     pickup_location = forms.ModelChoiceField(queryset=Location.objects.all(), empty_label=None)

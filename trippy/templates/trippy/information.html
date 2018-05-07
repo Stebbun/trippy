@@ -4,7 +4,7 @@
 {% block content %}
     {% load widget_tweaks %}
     {% csrf_token %}
-    
+
     {% if pageheader %}
     <div>
         <h2>{{ pageheader }}</h2>
@@ -147,7 +147,7 @@
         <div style="float: left; width: 50%">
             <h5>Pickup Date</h5>
             {{ srcdate }}<br>
-            <h5>Check Out Date</h5>
+            <h5>Dropoff Date</h5>
             {{ retdate }}
         </div>
     </div>
