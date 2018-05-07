@@ -15,6 +15,11 @@
 	}
 
 </script>
+    {% if pageheader %}
+    <div>
+        <h2>{{ pageheader }}</h2>
+    </div>
+    {% endif %}
 
     <div style="color: red;">
         {{ form.non_field_errors }}

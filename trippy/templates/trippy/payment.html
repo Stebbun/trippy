@@ -5,6 +5,12 @@
     <form method="post" novalidate>
     {% csrf_token %}
 
+    {% if pageheader %}
+    <div>
+        <h2>{{ pageheader }}</h2>
+    </div>
+    {% endif %}
+
     <div class='row'>
 	    <div style="float: left; width: 60%">
 	    {% for field in form.visible_fields %}

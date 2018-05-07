@@ -91,6 +91,8 @@ class AccomodationForm(forms.Form):
             raise forms.ValidationError('Invalid input')
         if check_in_date >= check_out_date:
             raise forms.ValidationError('You must choose a date later than the departure date')
+        if num_rooms > num_guests:
+            raise forms.ValidationError('Number of rooms can\'t exceed the number of guests')
 
 class CruiseForm(forms.Form):
     num_tickets = forms.ChoiceField(choices=[
