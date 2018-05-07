@@ -77,7 +77,7 @@ class AccomodationForm(forms.Form):
     ])
     location = forms.ModelChoiceField(queryset = Location.objects.all(), empty_label=None)
     check_in_date = forms.DateField(label="Check-In Date", initial=datetime.now())
-    check_out_date = forms.DateField(label="Check-Out Date", initial=datetime.now())
+    check_out_date = forms.DateField(label="Check-Out Date", initial=datetime.now() + timedelta(days=5))
 
     def clean(self):
         cleaned_data = super(AccomodationForm, self).clean()

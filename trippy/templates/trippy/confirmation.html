@@ -1,1 +1,32 @@
 {% extends "trippy/base.html" %}
+
+{% block content %}
+    {% load widget_tweaks %}
+    {% csrf_token %}
+
+    <center><h1>Confirmation for Trippy Payment #{{context.paymentid}}</h1></center>
+    {% if context.rtype == 'flight' %}
+    	<h3> Passenger Information </h3>
+    	{% for passenger in context.passengers %}
+    		{{passenger.LastName}} {{passenger.FirstName}}		{{passenger.Email}}
+    	{% endfor %}
+    	<h3> Flight Information </h3>
+    	{{ context.tickets }} {{ context.class }} Flight Ticket(s) <br>
+    	{{ context.toflight }}<br>
+    	{% if context.fromflight != None %}
+    	{{ context.fromflight }}<br>
+    	{% endif %}
+    {% elif context.rtype == 'accomodation' %}
+    	<h3> Guest Information </h3>
+    	{% for passenger in context.passengers %}
+    	{{passenger.LastName}} {{passenger.FirstName}}		{{passenger.Email}}
+    	{% endfor %}
+    	<h3> Hotel Information </h3>
+    	{{ context.accom }} <br>
+    	{{ context.rooms }} Rooms for {{context.guests}} Guests <br>
+    	Check In Date: {{ context.checkin}} <br>
+    	Check Out Date: {{ context.checkout}}<br>
+    {% endif %}
+        	<h3> Amount Paid </h3>
+    	${{ context.price}}
+{% endblock %}

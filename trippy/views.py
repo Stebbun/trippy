@@ -6,7 +6,7 @@ import datetime
 
 def strtoDate(string):
     string = string.split('-')
-    return datetime.date(int(string[0]),int(string[1]),int(string[2]))
+    return datetime.date(string[0],string[1],string[2])
 
 # Create your views here.
 def index(request):
@@ -84,6 +84,7 @@ def payment(request):
         fromflight = request.GET.get('fromflight')
         flight_class = request.GET.get('class')
         trip = request.GET.get('trip')
+        price = 0
         if fromflight != None:
             fromflight = int(fromflight)
             fromflight = Flight.objects.filter(pk=fromflight)[0]
@@ -105,6 +106,9 @@ def payment(request):
                     'tickets' : tickets,
                     'flight_class' : flight_class,
         }
+        linkcont = '&trip='+trip+'&toflight='+request.GET.get('toflight')+'&class='+flight_class+'&tickets='+str(tickets)+'&price='+str(price)
+        if fromflight != None:
+            linkcont += '&fromflight='+request.GET.get('fromflight')
     elif (rtype == 'accomodation'):
         guests = int(request.GET.get('guests'))
         accom = int(request.GET.get('accom'))
@@ -121,6 +125,8 @@ def payment(request):
                     'checkout' :checkout,
                     'price' : price,
                 }
+        linkcont = '&guests='+str(guests)+"&accom="+request.GET.get('accom')+'&rooms='+rooms+'&price='+price+"&checkin="+checkin+"&checkout"
+        +checkout
     if request.method == 'POST':
         form = PaymentForm(request.POST)
         if form.is_valid():
@@ -128,6 +134,8 @@ def payment(request):
             pay = Payment(GroupId_id =groupid, CardNumber=form['card_number'].data, PaymentAmount=price,
                 CardExpiryDate=form['card_expiry_date'].data)
             pay.save()
+            link = '/confirmation/?type='+rtype + linkcont+'&paymentid='+str(pay.pk)+'&groupid='+str(groupid)
+            return redirect(link)
         else:
             form = PaymentForm()
     else:
@@ -277,5 +285,43 @@ def passenger(request):
     return render(request, 'trippy/passenger.html', {'form' : form})
 
 def confirmation(request):
-    pass
-    #rtype = request.GET.get('type)
+    rtype = request.GET.get('type')
+    groupid = int(request.GET.get('groupid'))
+    passengers = Passenger.objects.filter(GroupId_id=groupid)
+    if (rtype == 'flight'):
+        toflight = request.GET.get('toflight')
+        fromflight = request.GET.get('fromflight')
+        if toflight != None:
+            toflight = int(toflight)
+            toflight = Flight.objects.filter(pk=toflight)[0]
+        if fromflight != None:
+            fromflight = int(fromflight)
+            fromflight = Flight.objects.filter(pk=fromflight)[0]
+        context = {
+            'rtype' : rtype,
+            'trip' : request.GET.get('trip'),
+            'toflight' : toflight,
+            'class' : request.GET.get('class'),
+            'tickets' :request.GET.get('tickets'),
+            'price' : request.GET.get('price'),
+            'fromflight' : fromflight,
+            'price' : request.GET.get('price'),
+            'paymentid' : request.GET.get('paymentid'),
+            'passengers' : passengers,
+        }
+    elif (rtype == 'accomodation'):
+        accom = int(request.GET.get('accom'))
+        accom = Accomodation.objects.filter(pk=accom)[0]
+        context = {
+            'rtype' : rtype,
+            'accom' : accom,
+            'guests' : request.GET.get('guests'),
+            'rooms' : request.GET.get('rooms'),
+            'price' : request.GET.get('price'),
+            'checkin' : request.GET.get('checkin'),
+            'checkout' : request.GET.get('checkout'),
+            'paymentid' : request.GET.get('paymentid'),
+            'passengers' : passengers,
+        }
+
+    return render(request, 'trippy/confirmation.html', {'context' : context})
