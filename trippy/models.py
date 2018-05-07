@@ -60,6 +60,9 @@ class CarRental(models.Model):
 	Rate = models.IntegerField()
 	CarType = models.CharField(max_length=30)
 
+	def __str__(self):
+		return str(self.pk) + " " + self.CarType + " $" + str(self.Rate)
+
 class Cruise(models.Model):
 	CruisePrice = models.IntegerField() 
 	CruiseNumber = models.IntegerField()
