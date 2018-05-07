@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.template import RequestContext
-from .forms import FlightForm, CruiseForm, PaymentForm, AccomodationForm, PassengerForm
+from .forms import FlightForm, CruiseForm, PaymentForm, AccomodationForm, PassengerForm, RentalForm, PackageForm
 from .models import Airport, Flight, Passenger, Group, Location, Accomodation
 import datetime
 
@@ -36,9 +36,9 @@ def flights(request):
             aairport = Airport.objects.filter(AirportName = form['dest_location'].data)[0]
             retdate = None
             if (form['flight_type'].data == "Round Trip"):
-                retdate = "&retdate=" + str(form['return_date'].data) 
-            info = "&trip=" + str(form['flight_type'].data) 
-            info += '&class=' + str(form['flight_class'].data)+ '&tickets='+str(form['num_tickets'].data) 
+                retdate = "&retdate=" + str(form['return_date'].data)
+            info = "&trip=" + str(form['flight_type'].data)
+            info += '&class=' + str(form['flight_class'].data)+ '&tickets='+str(form['num_tickets'].data)
             src = '&src='+str(dairport.pk)+'&srcdate='+str(form['arrive_date'].data)
             dest = "&dest="+str(aairport.pk)
             link = '/information/?type=flight&to=true' + info + src + dest
@@ -59,10 +59,22 @@ def cruises(request):
     return render(request, 'trippy/cruises.html', {'form' : form})
 
 def rentals(request):
-    return render(request, 'trippy/rentals.html')
+    if request.method == 'POST':
+        form = RentalForm(request.POST)
+        if form.is_valid():
+            pass
+    else:
+        form = RentalForm()
+    return render(request, 'trippy/rentals.html', {'form' : form})
 
 def packages(request):
-    return render(request, 'trippy/packages.html')
+    if request.method == 'POST':
+        form = PackageForm(request.POST)
+        if form.is_valid():
+            pass
+    else:
+        form = PackageForm()
+    return render(request, 'trippy/packages.html', {'form' : form})
 
 def payment(request):
     form = PaymentForm(request.POST or None)
@@ -119,7 +131,7 @@ def information(request):
                     'toflight' :toflight,
                     'fromflight' : fromflight,
                     'ticket_type' : flight_class,
-                    'tickets' : tickets, 
+                    'tickets' : tickets,
                     'classratio' : classratio,
                     'src' : src,
                     'srcName' : srcName,
@@ -175,14 +187,14 @@ def passenger(request):
                 if num == int(tickets):
                     link = '/payment/?type='+trip_type+'&trip='+trip+'&class='+flight_class+'&toflight='+toflight
                     if fromflight != None:
-                        link += '&fromflight=' + fromflight 
+                        link += '&fromflight=' + fromflight
                     return redirect(link)
                     pass
                 else:
                     num+=1
                     link = '/passenger/?type'+trip_type+'&trip='+trip+'&class='+flight_class+'&toflight='+toflight+'&num='+str(num)+'&groupid='+str(group)
                     if fromflight != None:
-                        link += '&fromflight=' + fromflight 
+                        link += '&fromflight=' + fromflight
                     return redirect(link)
     else:
         form = PassengerForm()

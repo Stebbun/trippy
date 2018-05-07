@@ -112,10 +112,36 @@ class CruiseForm(forms.Form):
             raise forms.ValidationError('Invalid input')
 
 class RentalForm(forms.Form):
-    pass
+    pickup_location = forms.ModelChoiceField(queryset=Location.objects.all(), empty_label=None)
+    dropoff_location = forms.ModelChoiceField(queryset=Location.objects.all(), empty_label=None)
+    pickup_date = forms.DateField(initial=datetime.now())
+    arrive_date = forms.DateField(initial=datetime.now() + timedelta(days=1))
+
+    def clean(self):
+        cleaned_data = super(RentalForm, self).clean()
+        pickup_location = cleaned_data.get('pickup_location')
+        dropoff_location = cleaned_data.get('dropoff_location')
+        pickup_date = cleaned_data.get('pickup_date')
+        arrive_date = cleaned_data.get('arrive_date')
 
 class PackageForm(forms.Form):
-    pass
+    source_location = forms.ModelChoiceField(queryset = Airport.objects.all(), empty_label=None, to_field_name="AirportName")
+    dest_location = forms.ModelChoiceField(queryset = Airport.objects.all(), empty_label=None, to_field_name="AirportName")
+    arrive_date = forms.DateField(initial=timezone.now)
+    return_date = forms.DateField(initial=datetime.now() + timedelta(days=5))
+    hotel_location = forms.ModelChoiceField(queryset = Location.objects.all(), empty_label=None)
+    check_in_date = forms.DateField(label="Check-In Date", initial=datetime.now())
+    check_out_date = forms.DateField(label="Check-Out Date", initial=datetime.now())
+
+    def clean(self):
+        cleaned_data = super(PackageForm, self).clean()
+        source_location = cleaned_data.get('source_location')
+        dest_location = cleaned_data.get('dest_location')
+        arrive_date = cleaned_data.get('arrive_date')
+        return_date = cleaned_data.get('return_date')
+        hotel_location = cleaned_data.get('hotel_location')
+        check_in_date = cleaned_data.get('check_in_date')
+        check_out_date = cleaned_data.get('check_out_date')
 
 class BasePaymentForm(forms.ModelForm):
     class Meta:
@@ -126,7 +152,7 @@ class PaymentForm(forms.ModelForm):
     first_name = forms.CharField(max_length=30)
     last_name = forms.CharField(max_length=30)
     email = forms.EmailField()
-    
+
     class Meta(BasePaymentForm.Meta):
         fields = ['first_name','last_name','email'] + BasePaymentForm.Meta.fields
 
