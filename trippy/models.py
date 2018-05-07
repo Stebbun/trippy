@@ -29,11 +29,11 @@ class Accomodation(models.Model):
 class Transportation(models.Model):
 	FLIGHT = 'FLI'
 	CAR = 'CAR'
-	CRUISE = 'CRU'
+	#CRUISE = 'CRU'
 	Transport_Choices = [
 		('Flight', 'Flight'),
 		('Car', 'Car Rental'),
-		('Cruise', 'Cruise'),
+		#('Cruise', 'Cruise'),
 	]
 	Transport_Type = models.CharField(max_length=10, choices=Transport_Choices, null=True)
 
@@ -59,6 +59,10 @@ class CarRental(models.Model):
 	TransportId = models.OneToOneField('Transportation', primary_key=True, on_delete=models.CASCADE)
 	Rate = models.IntegerField()
 	CarType = models.CharField(max_length=30)
+
+	def __str__(self):
+		return str(self.pk) + " " + self.CarType + " $" + str(self.Rate)
+
 
 '''
 class Cruise(models.Model):

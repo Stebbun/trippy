@@ -93,7 +93,11 @@ class AccomodationForm(forms.Form):
             raise forms.ValidationError('You must choose a check-out date later than the check-in date')
         if num_rooms > num_guests:
             raise forms.ValidationError('Number of rooms can\'t exceed the number of guests')
+        if num_rooms*4 > num_guests:
+            raise forms.ValidationError('Max number of guests per room is four')
+
 '''
+>>>>>>> c179aace52d56d85442235ab419f806f47d8ae4e
 class CruiseForm(forms.Form):
     num_tickets = forms.ChoiceField(choices=[
         ('1', 1),

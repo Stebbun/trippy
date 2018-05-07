@@ -1,12 +1,12 @@
 from django.shortcuts import render, redirect
 from django.template import RequestContext
 from .forms import FlightForm, PaymentForm, AccomodationForm, PassengerForm, RentalForm, PackageForm
-from .models import Airport, Flight, Passenger, Group, Location, Accomodation, Payment
+from .models import Airport, Flight, Passenger, Group, Location, Accomodation, Payment, CarRental, CarRentalTime
 import datetime
 
 def strtoDate(string):
     string = string.split('-')
-    return datetime.date(string[0],string[1],string[2])
+    return datetime.date(int(string[0]),int(string[1]),int(string[2]))
 
 # Create your views here.
 def index(request):
@@ -70,7 +70,6 @@ def rentals(request):
         if form.is_valid():
             pickup_location = Location.objects.filter(pk=form['pickup_location'].data)[0]
             dropoff_location = Location.objects.filter(pk=form['dropoff_location'].data)[0]
-
             src = '&src=' + str(pickup_location.pk)
             dest = '&dest=' + str(dropoff_location.pk)
             info = '&srcdate=' + str(form['pickup_date'].data)
@@ -248,7 +247,6 @@ def information(request):
         }
     elif rtype == 'rental':
         context = information_rental(request, rtype)
-
     return render(request, 'trippy/information.html', context)
 
 def information_rental(request, rtype):
