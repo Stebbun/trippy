@@ -60,7 +60,7 @@ class CarRental(models.Model):
 	Rate = models.IntegerField()
 	CarType = models.CharField(max_length=30)
 	Location = models.ForeignKey('Location', on_delete=models.CASCADE, default=0)
-
+	
 	def __str__(self):
 		return str(self.pk) + " " + self.CarType + " $" + str(self.Rate) + " " + str(self.Location)
 
@@ -91,12 +91,13 @@ class Passenger(models.Model):
 
 class Payment(models.Model):
 	GroupId = models.ForeignKey('Group', on_delete = models.CASCADE, default=0)
+	Email = models.EmailField(blank=True)
 	CardNumber = models.CharField(max_length=16)
 	PaymentAmount = models.IntegerField()
 	CardExpiryDate = models.CharField(max_length=5)
 
 	def __str__(self):
-		return 'Group ' + str(self.GroupId.pk) + ' ('+ self.CardNumber[-4:] + " $" + str(self.PaymentAmount)+')'
+		return "[" + str(self.pk) + "]"+' Group ' + str(self.GroupId.pk) + ' ('+ self.CardNumber[-4:] + " $" + str(self.PaymentAmount)+')'
 
 class Airport(models.Model):
 	AirportCode = models.CharField(max_length=3)

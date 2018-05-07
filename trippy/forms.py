@@ -97,7 +97,6 @@ class AccomodationForm(forms.Form):
             raise forms.ValidationError('Max number of guests per room is four')
 
 '''
->>>>>>> c179aace52d56d85442235ab419f806f47d8ae4e
 class CruiseForm(forms.Form):
     num_tickets = forms.ChoiceField(choices=[
         ('1', 1),
@@ -145,6 +144,11 @@ class RentalForm(forms.Form):
             raise forms.ValidationError('You must pick a valid dropoff date')
 
 class PackageForm(forms.Form):
+    flight_class = forms.ChoiceField(choices=[
+        ("First Class", "First Class"),
+        ("Business Class", "Business Class"),
+        ("Economy Class", 'Economy Class'),
+    ])
     source_location = forms.ModelChoiceField(queryset = Airport.objects.all(), empty_label=None, to_field_name="AirportName")
     dest_location = forms.ModelChoiceField(queryset = Airport.objects.all(), empty_label=None, to_field_name="AirportName")
     arrive_date = forms.DateField(initial=timezone.now)
@@ -198,3 +202,14 @@ class PassengerForm(forms.Form):
         gender = cleaned_data.get('gender')
         if not (first_name or last_name or email or gender):
             raise forms.ValidationError('Invalid input')
+
+class CancellationForm(forms.Form):
+    email = forms.EmailField()
+    payment_id = forms.IntegerField()
+
+    def clean(self):
+        cleaned_data = super(CancellationForm, self).clean()
+        email = cleaned_data.get('email')
+        paymentid = cleaned_data.get('paymentid')
+        if not (email or payment_id):
+            raise forms.ValidationError('Please fill out all fields')

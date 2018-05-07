@@ -12,4 +12,6 @@ urlpatterns = [
     path('information/', views.information, name='information'),
     path('passenger/', views.passenger, name = 'passenger'),
     path('confirmation/', views.confirmation, name = 'confirmation'),
+    path('cancellation/', views.cancellation, name = 'cancellation'),
+    path('cancellationconfirmation/', views.cancellationconfirmation, name='cancellationconfirmation')
 ]

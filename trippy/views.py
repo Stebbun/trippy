@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.template import RequestContext
-from .forms import FlightForm, PaymentForm, AccomodationForm, PassengerForm, RentalForm, PackageForm
+from .forms import FlightForm, PaymentForm, AccomodationForm, PassengerForm, RentalForm, PackageForm, CancellationForm
 from .models import Airport, Flight, Passenger, Group, Location, Accomodation, Payment, CarRental, CarRentalTime
 import datetime
 
@@ -168,7 +168,7 @@ def payment(request):
         form = PaymentForm(request.POST)
         if form.is_valid():
             groupid = int(request.GET.get('groupid'))
-            pay = Payment(GroupId_id=groupid, CardNumber=form['card_number'].data, PaymentAmount=price,
+            pay = Payment(GroupId_id =groupid, Email=form['email'].data,CardNumber=form['card_number'].data, PaymentAmount=price,
                 CardExpiryDate=form['card_expiry_date'].data)
             pay.save()
             link = '/confirmation/?type='+rtype + linkcont+'&paymentid='+str(pay.pk)+'&groupid='+str(groupid)
@@ -433,3 +433,30 @@ def confirmation(request):
         }
 
     return render(request, 'trippy/confirmation.html', {'context' : context})
+
+def cancellation(request):
+    if request.method == 'POST':
+        print("I am here")
+        form = CancellationForm(request.POST)
+        if form.is_valid():
+            paymentid = form['payment_id'].data
+            email = form['email'].data
+            receipt = Payment.objects.filter(pk=paymentid)[0]
+            if (email != receipt.Email):
+                linkcont = '?invalid=true'
+            else:
+                linkcont = '?invalid=false&paymentid='+str(paymentid)
+                receipt.delete()
+            return redirect('/cancellationconfirmation/'+linkcont)
+    else:
+        form = CancellationForm()
+    return render(request, 'trippy/cancellation.html', {'form' : form })
+
+def cancellationconfirmation(request):
+    paymentid = request.GET.get('paymentid')
+    if paymentid != None:
+        paymentid = int(paymentid)
+    context = { 'invalid' : request.GET.get('invalid'),
+                'paymentid' : paymentid,
+    }
+    return render(request, 'trippy/cancellationconfirmation.html', {'context' : context})
