@@ -93,11 +93,10 @@ class AccomodationForm(forms.Form):
             raise forms.ValidationError('You must choose a check-out date later than the check-in date')
         if num_rooms > num_guests:
             raise forms.ValidationError('Number of rooms can\'t exceed the number of guests')
-        if num_rooms*4 > num_guests:
+        if num_rooms*4 < num_guests:
             raise forms.ValidationError('Max number of guests per room is four')
 
 '''
->>>>>>> c179aace52d56d85442235ab419f806f47d8ae4e
 class CruiseForm(forms.Form):
     num_tickets = forms.ChoiceField(choices=[
         ('1', 1),
@@ -145,6 +144,11 @@ class RentalForm(forms.Form):
             raise forms.ValidationError('You must pick a valid dropoff date')
 
 class PackageForm(forms.Form):
+    flight_class = forms.ChoiceField(choices=[
+        ("First Class", "First Class"),
+        ("Business Class", "Business Class"),
+        ("Economy Class", 'Economy Class'),
+    ])
     source_location = forms.ModelChoiceField(queryset = Airport.objects.all(), empty_label=None, to_field_name="AirportName")
     dest_location = forms.ModelChoiceField(queryset = Airport.objects.all(), empty_label=None, to_field_name="AirportName")
     arrive_date = forms.DateField(initial=timezone.now)

@@ -59,7 +59,7 @@ class CarRental(models.Model):
 	TransportId = models.OneToOneField('Transportation', primary_key=True, on_delete=models.CASCADE)
 	Rate = models.IntegerField()
 	CarType = models.CharField(max_length=30)
-
+	Location = models.ForeignKey('Location', on_delete=models.CASCADE, default=0)
 	def __str__(self):
 		return str(self.pk) + " " + self.CarType + " $" + str(self.Rate)
 
