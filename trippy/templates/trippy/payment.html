@@ -1,1 +1,39 @@
-{% extends "trippy/base-form.html" %}
+{% extends "trippy/base.html" %}
+
+{% block content %}
+    {% load widget_tweaks %}
+    <form method="post" novalidate>
+    {% csrf_token %}
+
+    <div class='row'>
+	    <div style="float: left; width: 60%">
+	    {% for field in form.visible_fields %}
+	        <div class="form-group">
+	            {{ field.label_tag }}
+	            {% render_field field class="form-control" %}
+	            {% if field.help_text %}
+	                <small class="form-text text-muted">{{ field.help_text }}</small>
+	            {% endif %}
+	        </div>
+	    {% endfor %}
+		</div>
+		<div style='float: right; width: 40%; text-align: right'>
+			<h3>Order Summary</h3>
+			<h5>Total Cost: ${{context.price}}</h5>
+			{% if context.rtype == 'flight' %}
+				<p> {{context.trip}} <br>
+					{{context.tickets}} {{context.flight_class}} Flight Ticket(s) <br>
+					{{context.toflight}}<br>
+				{% if context.fromflight != None %}
+					{{context.tickets}} {{context.flight_class}} Flight Ticket(s) <br>
+					{{context.fromflight}}
+				{% endif %}
+				</p>
+
+			{% endif %}
+		</div>
+	</div>
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+{% endblock %}

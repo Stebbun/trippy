@@ -4,6 +4,9 @@ from django import forms
 from .models import Flight, Cruise, Payment, Passenger, Accomodation, Airport, Location
 from django.core import validators
 
+card_validator = validators.RegexValidator(r"\d{16}", "Your credit card must have 16 digits")
+expiry_validator = validators.RegexValidator(r"0[1-9]\/[1-9][1-9]|1[0-2]\/[1-9][1-9]", "Invalid Expiration Date")
+
 class FlightForm(forms.Form):
     flight_type = forms.ChoiceField(choices=[
         ('One Way', "One Way"),
@@ -48,7 +51,7 @@ class FlightForm(forms.Form):
     def result(self):
         return [self['source_location']]
 
-class HotelForm(forms.Form):
+class AccomodationForm(forms.Form):
     num_rooms = forms.ChoiceField(label="Rooms", choices=[
         ('1', 1),
         ('2', 2),
@@ -76,7 +79,7 @@ class HotelForm(forms.Form):
     check_out_date = forms.DateField(label="Check-Out Date", initial=datetime.now())
 
     def clean(self):
-        cleaned_data = super(HotelForm, self).clean()
+        cleaned_data = super(AccomodationForm, self).clean()
         num_rooms = cleaned_data.get('num_rooms')
         num_guests = cleaned_data.get('num_guests')
         location = cleaned_data.get('location')
@@ -145,29 +148,22 @@ class PackageForm(forms.Form):
         check_in_date = cleaned_data.get('check_in_date')
         check_out_date = cleaned_data.get('check_out_date')
 
-class BasePaymentForm(forms.ModelForm):
-    class Meta:
-        model = Payment
-        fields=["CardNumber", "PaymentAmount", "CardExpiryDate"]
 
-class PaymentForm(forms.ModelForm):
+class PaymentForm(forms.Form):
     first_name = forms.CharField(max_length=30)
     last_name = forms.CharField(max_length=30)
     email = forms.EmailField()
-
-    class Meta(BasePaymentForm.Meta):
-        fields = ['first_name','last_name','email'] + BasePaymentForm.Meta.fields
+    card_number = forms.CharField(required=True, validators=[card_validator])
+    card_expiry_date = forms.CharField(required=True, validators=[expiry_validator])
 
     def clean(self):
         cleaned_data = super(PaymentForm, self).clean()
         first_name = cleaned_data.get('first_name')
         last_name = cleaned_data.get('last_name')
         email = cleaned_data.get('email')
-        card_number = cleaned_data.get('CardNumber')
-        payment_amount = cleaned_data.get("PaymentAmount")
+        card_number = cleaned_data.get('card_number')
         expiry_date = cleaned_data.get('CardExpiryDate')
-        if not (first_name or last_name or email or card_number
-                or payment_amount or expiry_date):
+        if not (first_name or last_name or email or card_number or expiry_date):
             raise forms.ValidationError('Invalid input')
 
 class PassengerForm(forms.Form):
