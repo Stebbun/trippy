@@ -259,6 +259,10 @@ def information_rental(request, rtype):
     pickup_location = Location.objects.filter(pk=req_pickup_location)[0]
     dropoff_location = Location.objects.filter(pk=req_dropoff_location)[0]
 
+    rentals = CarRental.objects.filter(Location_id=pickup_location.pk)
+    if len(rentals) == 0:
+        rentals = None
+
     context = {
         'rtype' : rtype,
         'src' : req_pickup_location,
@@ -268,6 +272,7 @@ def information_rental(request, rtype):
         'pickup' : pickup_location,
         'dropoff' : dropoff_location,
         'pageheader' : header,
+        'rentals' : rentals
     }
     return context
 

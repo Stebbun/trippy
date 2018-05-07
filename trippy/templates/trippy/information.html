@@ -37,32 +37,32 @@
     <div class="row" style="float: center">
         {% if to == 'true' %}
             {% if dflights != None %}
-            <h2> Select a Departing Flight</h2> <br>
-            {% for flight in dflights %}
-            <div style="width: 100%">
-                {% if trip == 'One Way' %}
-                <a href = '/passenger/?type=flight&trip={{trip}}&class={{ticket_type}}&tickets={{tickets}}&toflight={{flight.pk}}&num=1'>
+                <h2> Select a Departing Flight</h2> <br>
+                {% for flight in dflights %}
+                <div style="width: 100%">
+                    {% if trip == 'One Way' %}
+                    <a href = '/passenger/?type=flight&trip={{trip}}&class={{ticket_type}}&tickets={{tickets}}&toflight={{flight.pk}}&num=1'>
+                    {% else %}
+                    <a href = '/information/?type=flight&to=false&trip={{trip}}&class={{ticket_type}}&tickets={{tickets}}&src={{src}}&srcdate={{sdate}}&dest={{dest}}&retdate={{rdate}}&toflight={{flight.pk}}'>
+                    {% endif %}
+                    <br>
+                    <div style="float: left; width: 60%">
+                        {{ flight.FlightCarrier }} <br>
+                        {{ flight.FlightNumber }} <br>
+                        {{ flight.DepartureTime }} - {{ flight.ArrivalTime}}
+                    </div>
+                    <div style="float: right; text-align: center; width: 30%">
+                        <br>
+                        <h5> ${% widthratio flight.FlightPrice 1 classratio %} </h5>
+                        <br>
+                    </div>
+                    </a>
+                </div>
+                {% endfor %}
                 {% else %}
-                <a href = '/information/?type=flight&to=false&trip={{trip}}&class={{ticket_type}}&tickets={{tickets}}&src={{src}}&srcdate={{sdate}}&dest={{dest}}&retdate={{rdate}}&toflight={{flight.pk}}'>
-                {% endif %}
-                <br>
-                <div style="float: left; width: 60%">
-                    {{ flight.FlightCarrier }} <br>
-                    {{ flight.FlightNumber }} <br>
-                    {{ flight.DepartureTime }} - {{ flight.ArrivalTime}}
-                </div>
-                <div style="float: right; text-align: center; width: 30%">
-                    <br>
-                    <h5> ${% widthratio flight.FlightPrice 1 classratio %} </h5>
-                    <br>
-                </div>
-                </a>
-            </div>
-            {% endfor %}
-            {% else %}
-                <h2> No departing flights fit your search </h2><br>
-                <h3> Please go back and change your search to find flights <h3><br>
-                <a href='/flights' style='float: center'>Go Back</a>
+                    <h2> No departing flights fit your search </h2><br>
+                    <h3> Please go back and change your search to find flights <h3><br>
+                    <a href='/flights' style='float: center'>Go Back</a>
             {% endif %}
         {% else %}
             {% if rflights != None %}
@@ -152,6 +152,15 @@
         </div>
     </div>
     <br>
+    <div class="row" style="float: center">
+        {% if rentals != None %}
+
+        {% else %}
+            <h2> No Rentals fit your search criteria </h2><br>
+            <h3> Please go back and change your search criteria to find available Rentals <h3><br>
+            <a href='/rentals' style='float: center'>Go Back</a>
+        {% endif %}
+    </div>
     {% endif %}
 
 {% endblock %}
