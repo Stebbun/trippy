@@ -1,7 +1,7 @@
 from datetime import datetime, date, timedelta
 from django.utils import timezone
 from django import forms
-from .models import Flight, Cruise, Payment, Passenger, Accomodation, Airport
+from .models import Flight, Cruise, Payment, Passenger, Accomodation, Airport, Location
 from django.core import validators
 
 class FlightForm(forms.Form):
@@ -25,7 +25,7 @@ class FlightForm(forms.Form):
     source_location = forms.ModelChoiceField(queryset = Airport.objects.all(), empty_label=None, to_field_name="AirportName")
     dest_location = forms.ModelChoiceField(queryset = Airport.objects.all(), empty_label=None, to_field_name="AirportName")
     arrive_date = forms.DateField(initial=timezone.now)
-    return_date = forms.DateField(initial=timezone.now)
+    return_date = forms.DateField(initial=datetime.now() + timedelta(days=5))
 
     def clean(self):
         cleaned_data = super(FlightForm, self).clean()
@@ -42,14 +42,36 @@ class FlightForm(forms.Form):
             raise forms.ValidationError('Invalid value', code='invalid')
         if source_location == dest_location:
             raise forms.ValidationError('Source and Destination must be different', code='invalid')
+        if arrive_date >= return_date:
+            raise forms.ValidationError('You must choose a date later than the departure date')
 
     def result(self):
         return [self['source_location']]
 
 class HotelForm(forms.Form):
-    num_rooms = forms.ChoiceField(label="Rooms", choices=Accomodation.NUM_ROOM_LIST)
-    num_guests = forms.ChoiceField(label="Guests", choices=Accomodation.NUM_GUEST_LIST)
-    location = forms.ChoiceField(label="Location", choices=Accomodation.LOCATION_LIST)
+    num_rooms = forms.ChoiceField(label="Rooms", choices=[
+        ('1', 1),
+        ('2', 2),
+        ('3', 3),
+        ('4', 4),
+        ('5', 5),
+        ('6', 6),
+    ])
+    num_guests = forms.ChoiceField(label="Guests", choices=[
+        ('1', 1),
+        ('2', 2),
+        ('3', 3),
+        ('4', 4),
+        ('5', 5),
+        ('6', 6),
+        ('7', 7),
+        ('8', 8),
+        ('9', 9),
+        ('10', 10),
+        ('11', 11),
+        ('12', 12),
+    ])
+    location = forms.ModelChoiceField(queryset = Location.objects.all(), empty_label=None)
     check_in_date = forms.DateField(label="Check-In Date", initial=datetime.now())
     check_out_date = forms.DateField(label="Check-Out Date", initial=datetime.now())
 
@@ -65,9 +87,16 @@ class HotelForm(forms.Form):
             raise forms.ValidationError('Invalid input')
 
 class CruiseForm(forms.Form):
-    num_tickets = forms.ChoiceField(choices=Cruise.NUM_TICKET_LIST)
-    source_location = forms.TypedChoiceField(choices=Cruise.SOURCE_LOCATION_LIST)
-    dest_location = forms.TypedChoiceField(choices=Cruise.DEST_LOCATION_LIST)
+    num_tickets = forms.ChoiceField(choices=[
+        ('1', 1),
+        ('2', 2),
+        ('3', 3),
+        ('4', 4),
+        ('5', 5),
+        ('6', 6),
+    ])
+    source_location = forms.ModelChoiceField(queryset = Location.objects.all(), empty_label=None, to_field_name="State")
+    dest_location = forms.ModelChoiceField(queryset = Location.objects.all(), empty_label=None, to_field_name="State")
     arrive_date = forms.DateField(initial=datetime.now())
     return_date = forms.DateField(initial=datetime.now() + timedelta(days=1))
 
@@ -111,4 +140,22 @@ class PaymentForm(forms.ModelForm):
         expiry_date = cleaned_data.get('CardExpiryDate')
         if not (first_name or last_name or email or card_number
                 or payment_amount or expiry_date):
+            raise forms.ValidationError('Invalid input')
+
+class PassengerForm(forms.Form):
+    first_name = forms.CharField(max_length=30)
+    last_name = forms.CharField(max_length=30)
+    email = forms.EmailField()
+    gender = forms.ChoiceField(choices=[
+        ('M', 'Male'),
+        ('F', 'Female'),
+        ])
+
+    def clean(self):
+        cleaned_data = super(PassengerForm, self).clean()
+        first_name = cleaned_data.get('first_name')
+        last_name = cleaned_data.get('last_name')
+        email = cleaned_data.get('email')
+        gender = cleaned_data.get('gender')
+        if not (first_name or last_name or email or gender):
             raise forms.ValidationError('Invalid input')

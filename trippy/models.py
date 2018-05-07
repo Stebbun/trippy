@@ -18,46 +18,16 @@ class Location(models.Model):
 	Country = models.CharField(max_length=30)
 
 	def __str__(self):
-		return self.City
+		return self.City+", " + self.State + ", " + self.Country
 
 class Accomodation(models.Model):
-	HOTEL = 'HOT'
-	INN = 'INN'
-	HOSTEL = 'HOS'
-	MOTEL = 'MOT'
-	Accom_Type = [
-		(HOTEL, 'Hotel'),
-		(INN, 'Inn'),
-		(HOSTEL, 'Hostel'),
-		(MOTEL, 'Motel'),
+	Accom_Type_Choices = [
+		('Hotel', 'Hotel'),
+		('Inn', 'Inn'),
+		('Hostel', 'Hostel'),
+		('Motel', 'Motel'),
 	]
-	NUM_ROOM_LIST = [
-		('1', 1),
-		('2', 2),
-		('3', 3),
-		('4', 4),
-		('5', 5),
-		('6', 6),
-	]
-	NUM_GUEST_LIST = [
-		('1', 1),
-		('2', 2),
-		('3', 3),
-		('4', 4),
-		('5', 5),
-		('6', 6),
-		('7', 7),
-		('8', 8),
-		('9', 9),
-		('10', 10),
-		('11', 11),
-		('12', 12),
-	]
-	LOCATION_LIST = [
-		("New-York", "New York"),
-		("Seattle", "Seattle"),
-		("San-Francisco", "San-Francisco"),
-	]
+	AccomodationType = models.CharField(max_length=3, choices=Accom_Type_Choices, default='HOT')
 	Rate = models.DecimalField(max_digits=9, decimal_places=2)
 	Discount = models.DecimalField(max_digits=2,decimal_places = 2)
 	LocationId = models.ForeignKey('Location', on_delete=models.CASCADE)
@@ -97,24 +67,9 @@ class CarRental(models.Model):
 	CarType = models.CharField(max_length=30)
 
 class Cruise(models.Model):
-	NUM_TICKET_LIST = [
-		('1', 1),
-		('2', 2),
-		('3', 3),
-		('4', 4),
-		('5', 5),
-		('6', 6),
-	]
-	SOURCE_LOCATION_LIST = [
-		("New-York", "New York"),
-	]
-	DEST_LOCATION_LIST = [
-		("Bahamas", "Bahamas"),
-		("Iceland", "Iceland"),
-	]
-	TransportId = models.OneToOneField('Transportation', primary_key=True, on_delete=models.CASCADE)
-	CruisePrice = models.IntegerField()
+	CruisePrice = models.IntegerField() 
 	CruiseNumber = models.IntegerField()
+	TransportId = models.OneToOneField('Transportation', primary_key=True, on_delete=models.CASCADE)
 
 class Group(models.Model):
 	size = models.IntegerField()
@@ -124,11 +79,10 @@ class Passenger(models.Model):
 	FirstName = models.CharField(max_length=30)
 	LastName = models.CharField(max_length=30)
 	Email = models.EmailField()
-	Gender = [
+	Gender = models.CharField(max_length=1,choices=[
 		("F", "Female"),
 		("M", "Male"),
-	]
-	isLeader = models.BooleanField()
+	], default='F')
 
 class Payment(models.Model):
 	GroupLeaderId = models.ForeignKey('Passenger', on_delete = models.CASCADE)
