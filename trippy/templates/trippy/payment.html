@@ -29,7 +29,15 @@
 					{{context.fromflight}}
 				{% endif %}
 				</p>
-
+			{% elif context.rtype == 'accomodation' %}
+				<p> {{context.guests}} Guests <br>
+					{{context.rooms}} Rooms <br>
+					<b>{{context.accom}} </b><br><br>
+					Check In Date: <br>
+					{{context.checkin}}<br>
+					Check Out Date: <br>
+					{{context.checkout}}<br>
+				</p>
 			{% endif %}
 		</div>
 	</div>

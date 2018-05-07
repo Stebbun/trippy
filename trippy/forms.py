@@ -5,7 +5,7 @@ from .models import Flight, Cruise, Payment, Passenger, Accomodation, Airport, L
 from django.core import validators
 
 card_validator = validators.RegexValidator(r"\d{16}", "Your credit card must have 16 digits")
-expiry_validator = validators.RegexValidator(r"0[1-9]\/[1-9][1-9]|1[0-2]\/[1-9][1-9]", "Invalid Expiration Date")
+expiry_validator = validators.RegexValidator(r"0[5-9]/1[8-9]|1[0-2]/1[8-9]|0[1-9]/[2-9]\d|1[0-2]/[2-9]\d", "Invalid Expiration Date")
 
 class FlightForm(forms.Form):
     flight_type = forms.ChoiceField(choices=[
@@ -160,7 +160,7 @@ class PaymentForm(forms.Form):
         last_name = cleaned_data.get('last_name')
         email = cleaned_data.get('email')
         card_number = cleaned_data.get('card_number')
-        expiry_date = cleaned_data.get('CardExpiryDate')
+        card_expiry_date = cleaned_data.get('CardExpiryDate')
         if not (first_name or last_name or email or card_number or expiry_date):
             raise forms.ValidationError('Invalid input')
 

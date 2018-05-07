@@ -80,7 +80,7 @@ class Passenger(models.Model):
 	], default='F')
 
 class Payment(models.Model):
-	GroupLeaderId = models.ForeignKey('Passenger', on_delete = models.CASCADE)
+	GroupId = models.ForeignKey('Group', on_delete = models.CASCADE, default=0)
 	CardNumber = models.CharField(max_length=16)
 	PaymentAmount = models.IntegerField()
 	CardExpiryDate = models.CharField(max_length=5)

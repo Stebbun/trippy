@@ -84,7 +84,6 @@ def payment(request):
         fromflight = request.GET.get('fromflight')
         flight_class = request.GET.get('class')
         trip = request.GET.get('trip')
-        price = 0
         if fromflight != None:
             fromflight = int(fromflight)
             fromflight = Flight.objects.filter(pk=fromflight)[0]
@@ -108,11 +107,27 @@ def payment(request):
         }
     elif (rtype == 'accomodation'):
         guests = int(request.GET.get('guests'))
-        accom = request.GET.get('accom')
+        accom = int(request.GET.get('accom'))
+        accom = Accomodation.objects.filter(pk=accom)[0]
+        rooms = int(request.GET.get('rooms'))
+        price = accom.Rate * rooms
+        checkin = request.GET.get('checkin')
+        checkout = request.GET.get('checkout')
+        context = { 'rtype' : rtype,
+                    'rooms' : rooms,
+                    'guests' : guests,
+                    'accom' : accom,
+                    'checkin' : checkin,
+                    'checkout' :checkout,
+                    'price' : price,
+                }
     if request.method == 'POST':
         form = PaymentForm(request.POST)
         if form.is_valid():
-            PAy
+            groupid = int(request.GET.get('groupid'))
+            pay = Payment(GroupId_id =groupid, CardNumber=form['card_number'].data, PaymentAmount=price,
+                CardExpiryDate=form['card_expiry_date'].data)
+            pay.save()
         else:
             form = PaymentForm()
     else:
@@ -251,12 +266,16 @@ def passenger(request):
                 passenger = Passenger(FirstName=form['first_name'].data, LastName=form['last_name'].data, Email=form['email'].data, Gender=form['gender'].data, GroupId_id=group)
                 passenger.save()
                 if num == int(guests):
-                    link = '/payment/?type='+rtype+'&accom='+accom+'&rooms='+rooms+'&checkin='+checkin+'&checkout='+checkout+'&groupid='+group
+                    link = '/payment/?type='+rtype+'&accom='+accom+'&guests='+guests+'&rooms='+rooms+'&checkin='+checkin+'&checkout='+checkout+'&groupid='+str(group)
                     return redirect(link)
                 else:
                     num+=1
-                    link='/passenger/?type='+rtype+'&rooms='+rooms+"&guests"+guests+'&checkin='+checkin+'&checkout='+checkout+'&accom='+accom+'&num='+str(num)+'&groupid='+group
+                    link='/passenger/?type='+rtype+'&rooms='+rooms+"&guests"+guests+'&checkin='+checkin+'&checkout='+checkout+'&accom='+accom+'&num='+str(num)+'&groupid='+str(group)
                     return redirect(link)
     else:
         form = PassengerForm()
     return render(request, 'trippy/passenger.html', {'form' : form})
+
+def confirmation(request):
+    pass
+    #rtype = request.GET.get('type)
