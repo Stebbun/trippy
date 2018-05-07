@@ -27,7 +27,7 @@ class FlightForm(forms.Form):
     ])
     source_location = forms.ModelChoiceField(queryset = Airport.objects.all(), empty_label=None, to_field_name="AirportName")
     dest_location = forms.ModelChoiceField(queryset = Airport.objects.all(), empty_label=None, to_field_name="AirportName")
-    arrive_date = forms.DateField(initial=timezone.now)
+    arrive_date = forms.DateField(initial=datetime.now())
     return_date = forms.DateField(initial=datetime.now() + timedelta(days=5))
 
     def clean(self):
@@ -39,6 +39,7 @@ class FlightForm(forms.Form):
         dest_location = cleaned_data.get('dest_location')
         arrive_date = cleaned_data.get('arrive_date')
         return_date = cleaned_data.get('return_date')
+        print(arrive_date)
         if not (flight_type or num_tickets or flight_class
                 or source_location or dest_location or arrive_date
                 or return_date):
@@ -88,6 +89,8 @@ class AccomodationForm(forms.Form):
         if not (num_rooms or num_guests or location or check_in_date
                 or check_out_date):
             raise forms.ValidationError('Invalid input')
+        if check_in_date >= check_out_date:
+            raise forms.ValidationError('You must choose a date later than the departure date')
 
 class CruiseForm(forms.Form):
     num_tickets = forms.ChoiceField(choices=[
@@ -120,14 +123,19 @@ class RentalForm(forms.Form):
     pickup_location = forms.ModelChoiceField(queryset=Location.objects.all(), empty_label=None)
     dropoff_location = forms.ModelChoiceField(queryset=Location.objects.all(), empty_label=None)
     pickup_date = forms.DateField(initial=datetime.now())
-    arrive_date = forms.DateField(initial=datetime.now() + timedelta(days=1))
+    dropoff_date = forms.DateField(initial=datetime.now() + timedelta(days=1))
 
     def clean(self):
         cleaned_data = super(RentalForm, self).clean()
         pickup_location = cleaned_data.get('pickup_location')
         dropoff_location = cleaned_data.get('dropoff_location')
         pickup_date = cleaned_data.get('pickup_date')
-        arrive_date = cleaned_data.get('arrive_date')
+        dropoff_date = cleaned_data.get('dropoff_date')
+        if not (pickup_location or dropoff_location or pickup_date
+                or dropoff_date):
+            raise forms.ValidationError('Invalid input')
+        if pickup_date > dropoff_date:
+            raise forms.ValidationError('You must pick a valid dropoff date')
 
 class PackageForm(forms.Form):
     source_location = forms.ModelChoiceField(queryset = Airport.objects.all(), empty_label=None, to_field_name="AirportName")

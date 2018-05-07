@@ -22,7 +22,7 @@ def accomodations(request):
             checkin = strtoDate(form['check_in_date'].data)
             checkout = strtoDate(form['check_out_date'].data)
             link = '/information/?type=accomodation&rooms='+num_rooms+"&guests="+num_guests+'&location='+str(location.pk)
-            link += '&checkin='+str(form['check_in_date'].data)+'&checkout='+str(form['check_out_date'].data)            
+            link += '&checkin='+str(form['check_in_date'].data)+'&checkout='+str(form['check_out_date'].data)
             return redirect(link)
     else:
         form = AccomodationForm()
@@ -45,9 +45,6 @@ def flights(request):
             if retdate != None:
                 link += retdate
             return redirect(link)
-        else:
-            errors_dict = form.errors.as_data()
-            print(errors_dict)
     else:
         form = FlightForm()
     return render(request, 'trippy/flights.html', {'form' : form})
@@ -162,7 +159,7 @@ def information(request):
         if rflights is None or len(rflights) == 0:
             rflights = None
         context = { 'rtype' : rtype,
-                    'trip' : trip, 
+                    'trip' : trip,
                     'to' : to,
                     'toflight' :toflight,
                     'fromflight' : fromflight,
