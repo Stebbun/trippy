@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.template import RequestContext
-from .forms import FlightForm, PaymentForm, AccomodationForm, PassengerForm, RentalForm, PackageForm, CancellationForm
+from .forms import FlightForm, PaymentForm, AccomodationForm, PassengerForm, RentalForm, CancellationForm #,PackageForm
 from .models import Airport, Flight, Passenger, Group, Location, Accomodation, Payment, CarRental, CarRentalTime
 import datetime
 
@@ -81,15 +81,15 @@ def rentals(request):
         form = RentalForm()
     return render(request, 'trippy/rentals.html', {'form' : form, 'pageheader' : header})
 
-def packages(request):
-    header = 'Packages'
-    if request.method == 'POST':
-        form = PackageForm(request.POST)
-        if form.is_valid():
-            pass
-    else:
-        form = PackageForm()
-    return render(request, 'trippy/packages.html', {'form' : form, 'pageheader' : header})
+# def packages(request):
+#     header = 'Packages'
+#     if request.method == 'POST':
+#         form = PackageForm(request.POST)
+#         if form.is_valid():
+#             pass
+#     else:
+#         form = PackageForm()
+#     return render(request, 'trippy/packages.html', {'form' : form, 'pageheader' : header})
 
 def payment(request):
     header = 'Payment Information'
