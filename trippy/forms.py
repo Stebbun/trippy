@@ -110,6 +110,8 @@ class CruiseForm(forms.Form):
         if not (num_tickets or source_location or dest_location
                 or arrive_date or return_date):
             raise forms.ValidationError('Invalid input')
+        if source_location == dest_location:
+            raise forms.ValidationError('Source and Destination must be different', code='invalid')
 
 class RentalForm(forms.Form):
     pickup_location = forms.ModelChoiceField(queryset=Location.objects.all(), empty_label=None)

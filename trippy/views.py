@@ -47,6 +47,9 @@ def flights(request):
             if retdate != None:
                 link += retdate
             return redirect(link)
+        else:
+            errors_dict = form.errors.as_data()
+            print(errors_dict)
     else:
         form = FlightForm()
     return render(request, 'trippy/flights.html', {'form' : form})

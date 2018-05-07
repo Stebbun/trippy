@@ -5,6 +5,10 @@
     <form method="post" novalidate>
     {% csrf_token %}
 
+    <div style="color: red;">
+        {{ form.non_field_errors }}
+    </div>
+
     {% for field in form.visible_fields %}
         <div class="form-group">
             {{ field.label_tag }}
