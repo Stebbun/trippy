@@ -48,7 +48,7 @@ class FlightForm(forms.Form):
     def result(self):
         return [self['source_location']]
 
-class HotelForm(forms.Form):
+class AccomodationForm(forms.Form):
     num_rooms = forms.ChoiceField(label="Rooms", choices=[
         ('1', 1),
         ('2', 2),
@@ -76,7 +76,7 @@ class HotelForm(forms.Form):
     check_out_date = forms.DateField(label="Check-Out Date", initial=datetime.now())
 
     def clean(self):
-        cleaned_data = super(HotelForm, self).clean()
+        cleaned_data = super(AccomodationForm, self).clean()
         num_rooms = cleaned_data.get('num_rooms')
         num_guests = cleaned_data.get('num_guests')
         location = cleaned_data.get('location')

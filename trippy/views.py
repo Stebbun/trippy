@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.template import RequestContext
-from .forms import FlightForm, CruiseForm, PaymentForm, HotelForm, PassengerForm
-from .models import Airport, Flight, Passenger, Group, Location
+from .forms import FlightForm, CruiseForm, PaymentForm, AccomodationForm, PassengerForm
+from .models import Airport, Flight, Passenger, Group, Location, Accomodation
 import datetime
 
 def strtoDate(string):
@@ -12,23 +12,21 @@ def strtoDate(string):
 def index(request):
     return render(request, 'trippy/index.html')
 
-def hotels(request):
+def accomodations(request):
     if request.method == 'POST':
-        form = HotelForm(request.POST)
+        form = AccomodationForm(request.POST)
         if form.is_valid():
             num_rooms=form['num_rooms'].data
             num_guests=form['num_guests'].data
             location = Location.objects.filter(pk= form['location'].data)[0]
             checkin = strtoDate(form['check_in_date'].data)
             checkout = strtoDate(form['check_out_date'].data)
-            duration = (checkout-checkin).days
-            link = '/information/?type=hotel&rooms='+num_rooms+"&guests="+num_guests+'&location='+str(location.pk)
-            link += '&checkin='+str(form['check_in_date'].data)+'&checkout='+str(form['check_out_date'].data)
-            link +='&duration='+str(duration)
+            link = '/information/?type=accomodation&rooms='+num_rooms+"&guests="+num_guests+'&location='+str(location.pk)
+            link += '&checkin='+str(form['check_in_date'].data)+'&checkout='+str(form['check_out_date'].data)            
             return redirect(link)
     else:
-        form = HotelForm()
-    return render(request, 'trippy/hotels.html', {'form' : form})
+        form = AccomodationForm()
+    return render(request, 'trippy/accomodations.html', {'form' : form})
 
 def flights(request):
     if request.method == 'POST':
@@ -77,7 +75,8 @@ def payment(request):
     return render(request, 'trippy/payment.html', {'form' : form})
 
 def information(request):
-    if (request.GET.get('type') == 'flight'):
+    rtype = request.GET.get('type')
+    if (rtype == 'flight'):
         trip = request.GET.get('trip')
         to = request.GET.get('to')
         toflight = request.GET.get('toflight')
@@ -114,7 +113,8 @@ def information(request):
             rflights = rflights.filter(ArrivalTime__contains=datetime.date(int(retdate[0]), int(retdate[1]), int(retdate[2])))
         if rflights is None or len(rflights) == 0:
             rflights = None
-        context = { 'trip' : trip, 
+        context = { 'rtype' : rtype,
+                    'trip' : trip, 
                     'to' : to,
                     'toflight' :toflight,
                     'fromflight' : fromflight,
@@ -129,8 +129,27 @@ def information(request):
                     'rdate' : rdate,
                     'dflights' : dflights,
                     'rflights' : rflights }
-    elif (request.GET.get('type') == 'hotel'):
-        hotel = request.GET.get('type')
+    elif (rtype == 'accomodation'):
+        rooms = request.GET.get('rooms')
+        guests = request.GET.get('guests')
+        location = int(request.GET.get('location'))
+        checkin = request.GET.get('checkin')
+        checkout = request.GET.get('checkout')
+        duration = (strtoDate(checkout)-strtoDate(checkin)).days
+        loc = Location.objects.filter(pk=location)[0]
+        print (rtype)
+        print(loc)
+        accomodations = Accomodation.objects.filter(LocationId_id=loc.pk)
+        context = { 'rtype' : rtype,
+                    'rooms' : rooms,
+                    'guests' : guests,
+                    'location' : location,
+                    'checkin' : checkin,
+                    'checkout' : checkout,
+                    'duration' : duration,
+                    'loc' : loc,
+                    'accomodations' : accomodations,
+        }
     return render(request, 'trippy/information.html', context)
 
 def passenger(request):

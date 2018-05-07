@@ -5,6 +5,7 @@
     {% load widget_tweaks %}
     {% csrf_token %}
 
+    {% if rtype == 'flight' %}
     <div class="row">
         <div style="float: left; width: 50%">
         <h5>Flight Type</h5>
@@ -86,5 +87,23 @@
                 <a href='/passenger/?type=flight&trip=One%20Way&class={{ticket_type}}&tickets={{tickets}}&toflight={{toflight}}&num=1'>Proceed</a>
             {% endif %}
         {% endif %}
+    {% elif rtype == 'accomodation' %}
+    <div class="row">
+        <div style="float: left; width: 50%">
+        <h5>Number of Rooms</h5>
+        {{ rooms }} Rooms<br>
+        <h5>Number of Guests</h5>
+        {{ guests }} Guests<br>
+        <h5>Location</h5>
+        {{ loc }} <br>
+        </div>
+        <div style="float: left; width: 50%">
+        <h5>Check In Date</h5>
+        {{ checkin }}<br>
+        <h5>Check Out Date</h5>
+        {{ checkout}}
+        </div>
+    </div>
+    {% endif %}
 
 {% endblock %}

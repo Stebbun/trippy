@@ -27,7 +27,7 @@ class Accomodation(models.Model):
 		('Hostel', 'Hostel'),
 		('Motel', 'Motel'),
 	]
-	AccomodationType = models.CharField(max_length=3, choices=Accom_Type_Choices, default='HOT')
+	AccomodationType = models.CharField(max_length=5, choices=Accom_Type_Choices, default='Hotel')
 	Rate = models.DecimalField(max_digits=9, decimal_places=2)
 	Discount = models.DecimalField(max_digits=2,decimal_places = 2)
 	LocationId = models.ForeignKey('Location', on_delete=models.CASCADE)
@@ -53,7 +53,7 @@ class Flight(models.Model):
 	DepartureTime = models.DateTimeField(default=timezone.now)
 	DepartureAirport = models.ForeignKey('Airport', on_delete=models.CASCADE, related_name='Dest_%(class)s', default=0)
 	ArrivalTime = models.DateTimeField(default=timezone.now)
-	ArrivalAirport = models.ForeignKey('Airport', on_delete=models.CASCADE, default = 0)
+	ArrivalAirport = models.ForeignKey('Airport', on_delete=models.CASCADE, default=0)
 	TransportId = models.OneToOneField('Transportation', primary_key=True, on_delete=models.CASCADE)
 
 	def __str__(self):
