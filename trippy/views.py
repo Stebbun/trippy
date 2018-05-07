@@ -13,6 +13,7 @@ def index(request):
     return render(request, 'trippy/index.html')
 
 def accomodations(request):
+    header = 'Accomodations'
     if request.method == 'POST':
         form = AccomodationForm(request.POST)
         if form.is_valid():
@@ -26,9 +27,10 @@ def accomodations(request):
             return redirect(link)
     else:
         form = AccomodationForm()
-    return render(request, 'trippy/accomodations.html', {'form' : form})
+    return render(request, 'trippy/accomodations.html', {'form' : form, 'pageheader' : header})
 
 def flights(request):
+    header = 'Flights'
     if request.method == 'POST':
         form = FlightForm(request.POST)
         if form.is_valid():
@@ -47,36 +49,49 @@ def flights(request):
             return redirect(link)
     else:
         form = FlightForm()
-    return render(request, 'trippy/flights.html', {'form' : form})
+    return render(request, 'trippy/flights.html', {'form' : form, 'pageheader' : header})
 
 def cruises(request):
+    header = 'Cruises'
     if request.method == 'POST':
         form = CruiseForm(request.POST)
         if form.is_valid():
             pass
     else:
         form = CruiseForm()
-    return render(request, 'trippy/cruises.html', {'form' : form})
+    return render(request, 'trippy/cruises.html', {'form' : form, 'pageheader' : header})
 
 def rentals(request):
+    header = 'Car Rentals'
     if request.method == 'POST':
         form = RentalForm(request.POST)
         if form.is_valid():
-            pass
+            pickup_location = Location.objects.filter(pk=form['pickup_location'].data)[0]
+            dropoff_location = Location.objects.filter(pk=form['dropoff_location'].data)[0]
+
+            src = '&src=' + str(pickup_location.pk)
+            dest = '&dest=' + str(dropoff_location.pk)
+            info = '&srcdate=' + str(form['pickup_date'].data)
+            info += '&retdate=' + str(form['dropoff_date'].data)
+            base = '/information/?type=rental'
+            link = base + src + dest + info
+            return redirect(link)
     else:
         form = RentalForm()
-    return render(request, 'trippy/rentals.html', {'form' : form})
+    return render(request, 'trippy/rentals.html', {'form' : form, 'pageheader' : header})
 
 def packages(request):
+    header = 'Packages'
     if request.method == 'POST':
         form = PackageForm(request.POST)
         if form.is_valid():
             pass
     else:
         form = PackageForm()
-    return render(request, 'trippy/packages.html', {'form' : form})
+    return render(request, 'trippy/packages.html', {'form' : form, 'pageheader' : header})
 
 def payment(request):
+    header = 'Payment Information'
     rtype = request.GET.get('type')
     if (rtype == 'flight'):
         tickets = int(request.GET.get('tickets'))
@@ -105,6 +120,7 @@ def payment(request):
                     'price' : price,
                     'tickets' : tickets,
                     'flight_class' : flight_class,
+                    'pageheader' : header,
         }
         linkcont = '&trip='+trip+'&toflight='+request.GET.get('toflight')+'&class='+flight_class+'&tickets='+str(tickets)+'&price='+str(price)
         if fromflight != None:
@@ -124,6 +140,7 @@ def payment(request):
                     'checkin' : checkin,
                     'checkout' :checkout,
                     'price' : price,
+                    'pageheader' : header,
                 }
         linkcont = '&guests='+str(guests)+"&accom="+request.GET.get('accom')+'&rooms='+rooms+'&price='+price+"&checkin="+checkin+"&checkout"
         +checkout
@@ -143,8 +160,10 @@ def payment(request):
     return render(request, 'trippy/payment.html', {'form' : form, 'context': context })
 
 def information(request):
+    header = 'Information'
     rtype = request.GET.get('type')
     if (rtype == 'flight'):
+        header = 'Flight Information'
         trip = request.GET.get('trip')
         to = request.GET.get('to')
         toflight = request.GET.get('toflight')
@@ -196,8 +215,10 @@ def information(request):
                     'destName' : destName,
                     'rdate' : rdate,
                     'dflights' : dflights,
-                    'rflights' : rflights }
+                    'rflights' : rflights,
+                    'pageheader' : header, }
     elif (rtype == 'accomodation'):
+        header = 'Accomodation Information'
         rooms = request.GET.get('rooms')
         num = request.GET.get('num')
         guests = request.GET.get('guests')
@@ -221,11 +242,37 @@ def information(request):
                     'rate' : rate,
                     'loc' : loc,
                     'accomodations' : accomodations,
+                    'pageheader' : header,
         }
+    elif rtype == 'rental':
+        context = information_rental(request, rtype)
 
     return render(request, 'trippy/information.html', context)
 
+def information_rental(request, rtype):
+    header = 'Car Rental Information'
+    req_pickup_location = int(request.GET.get('src'))
+    req_dropoff_location = int(request.GET.get('dest'))
+    req_pickup_date = request.GET.get('srcdate')
+    req_dropoff_date = request.GET.get('retdate')
+
+    pickup_location = Location.objects.filter(pk=req_pickup_location)[0]
+    dropoff_location = Location.objects.filter(pk=req_dropoff_location)[0]
+
+    context = {
+        'rtype' : rtype,
+        'src' : req_pickup_location,
+        'srcdate' : req_pickup_date,
+        'dest' : req_dropoff_location,
+        'retdate' : req_dropoff_date,
+        'pickup' : pickup_location,
+        'dropoff' : dropoff_location,
+        'pageheader' : header,
+    }
+    return context
+
 def passenger(request):
+    header = 'Passenger Information'
     if request.method == 'POST':
         rtype = request.GET.get('type')
         if rtype == 'flight':
@@ -282,9 +329,10 @@ def passenger(request):
                     return redirect(link)
     else:
         form = PassengerForm()
-    return render(request, 'trippy/passenger.html', {'form' : form})
+    return render(request, 'trippy/passenger.html', {'form' : form, 'pageheader' : header,})
 
 def confirmation(request):
+    header = 'Confirmation'
     rtype = request.GET.get('type')
     groupid = int(request.GET.get('groupid'))
     passengers = Passenger.objects.filter(GroupId_id=groupid)
@@ -308,6 +356,7 @@ def confirmation(request):
             'price' : request.GET.get('price'),
             'paymentid' : request.GET.get('paymentid'),
             'passengers' : passengers,
+            'pageheader' : header,
         }
     elif (rtype == 'accomodation'):
         accom = int(request.GET.get('accom'))
@@ -322,6 +371,7 @@ def confirmation(request):
             'checkout' : request.GET.get('checkout'),
             'paymentid' : request.GET.get('paymentid'),
             'passengers' : passengers,
+            'pageheader' : header,
         }
 
     return render(request, 'trippy/confirmation.html', {'context' : context})

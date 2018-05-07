@@ -4,6 +4,12 @@
 {% block content %}
     {% load widget_tweaks %}
     {% csrf_token %}
+    
+    {% if pageheader %}
+    <div>
+        <h2>{{ pageheader }}</h2>
+    </div>
+    {% endif %}
 
     {% if rtype == 'flight' %}
     <div class="row">
@@ -45,9 +51,9 @@
                     {{ flight.FlightNumber }} <br>
                     {{ flight.DepartureTime }} - {{ flight.ArrivalTime}}
                 </div>
-                <div style="float: right; text-align: center; width: 30%"> 
+                <div style="float: right; text-align: center; width: 30%">
                     <br>
-                    <h5> ${% widthratio flight.FlightPrice 1 classratio %} </h5> 
+                    <h5> ${% widthratio flight.FlightPrice 1 classratio %} </h5>
                     <br>
                 </div>
                 </a>
@@ -64,15 +70,15 @@
             {% for flight in rflights %}
             <div style="width: 100%">
                 <br>
-                <a href = '/passenger/?type=flight&trip={{trip}}&class={{ticket_type}}&tickets={{tickets}}&toflight={{toflight}}&fromflight={{flight.pk}}&num=1'> 
+                <a href = '/passenger/?type=flight&trip={{trip}}&class={{ticket_type}}&tickets={{tickets}}&toflight={{toflight}}&fromflight={{flight.pk}}&num=1'>
                 <div style="float: left; width: 60%">
                     {{ flight.FlightCarrier }} <br>
                     {{ flight.FlightNumber }} <br>
                     {{ flight.DepartureTime }} - {{ flight.ArrivalTime}}
                 </div>
-                <div style="float: right; text-align: center; width: 30%"> 
+                <div style="float: right; text-align: center; width: 30%">
                     <br>
-                    <h5> ${% widthratio flight.FlightPrice 1 classratio %} </h5> 
+                    <h5> ${% widthratio flight.FlightPrice 1 classratio %} </h5>
                     <br>
                 </div>
                 </a>
@@ -90,20 +96,21 @@
     {% elif rtype == 'accomodation' %}
     <div class="row">
         <div style="float: left; width: 50%">
-        <h5>Number of Rooms</h5>
-        {{ rooms }} Rooms<br>
-        <h5>Number of Guests</h5>
-        {{ guests }} Guests<br>
-        <h5>Location</h5>
-        {{ loc }} <br>
+            <h5>Number of Rooms</h5>
+            {{ rooms }} Rooms<br>
+            <h5>Number of Guests</h5>
+            {{ guests }} Guests<br>
+            <h5>Location</h5>
+            {{ loc }} <br>
         </div>
         <div style="float: left; width: 50%">
-        <h5>Check In Date</h5>
-        {{ checkin }}<br>
-        <h5>Check Out Date</h5>
-        {{ checkout}}
+            <h5>Check In Date</h5>
+            {{ checkin }}<br>
+            <h5>Check Out Date</h5>
+            {{ checkout}}
         </div>
-    </div><br>
+    </div>
+    <br>
     <div class="row" style="float: center">
         {% if accomodations != None %}
             <h2> Select an Accomodation</h2> <br>
@@ -115,9 +122,9 @@
                     <h5>{{ accom.AccomodationName }} </h5>
                     {{ accom.AccomodationType }} <br>
                 </div>
-                <div style="float: right; text-align: center; width: 30%"> 
+                <div style="float: right; text-align: center; width: 30%">
                     <h5>Total</h5>
-                    <h5> ${% widthratio accom.Rate 1 rate %} </h5> 
+                    <h5> ${% widthratio accom.Rate 1 rate %} </h5>
                     <br>
                 </div>
                 </a>
@@ -128,6 +135,23 @@
                 <h3> Please go back and change your search to find Accomodations <h3><br>
                 <a href='/accomodations' style='float: center'>Go Back</a>
             {% endif %}
+
+    {% elif rtype == 'rental' %}
+    <div class="row">
+        <div style="float: left; width: 50%">
+            <h5>Pickup Location</h5>
+            {{ pickup }}<br>
+            <h5>Dropoff Location</h5>
+            {{ dropoff }} <br>
+        </div>
+        <div style="float: left; width: 50%">
+            <h5>Pickup Date</h5>
+            {{ srcdate }}<br>
+            <h5>Check Out Date</h5>
+            {{ retdate }}
+        </div>
+    </div>
+    <br>
     {% endif %}
 
 {% endblock %}

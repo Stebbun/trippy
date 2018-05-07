@@ -4,6 +4,12 @@
     {% load widget_tweaks %}
     {% csrf_token %}
 
+    {% if pageheader %}
+    <div>
+        <h2>{{ pageheader }}</h2>
+    </div>
+    {% endif %}
+
     <center><h1>Confirmation for Trippy Payment #{{context.paymentid}}</h1></center>
     {% if context.rtype == 'flight' %}
     	<h3> Passenger Information </h3>
