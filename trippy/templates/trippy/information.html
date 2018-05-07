@@ -103,7 +103,31 @@
         <h5>Check Out Date</h5>
         {{ checkout}}
         </div>
-    </div>
+    </div><br>
+    <div class="row" style="float: center">
+        {% if accomodations != None %}
+            <h2> Select an Accomodation</h2> <br>
+            {% for accom in accomodations %}
+            <div style="width: 100%">
+                <a href = '/passenger/?type=accomodation&rooms={{rooms}}&guests={{guests}}&checkin={{checkin}}&checkout={{checkout}}&accom={{accom.pk}}&num=1'>
+                <br>
+                <div style="float: left; width: 60%">
+                    <h5>{{ accom.AccomodationName }} </h5>
+                    {{ accom.AccomodationType }} <br>
+                </div>
+                <div style="float: right; text-align: center; width: 30%"> 
+                    <h5>Total</h5>
+                    <h5> ${% widthratio accom.Rate 1 rate %} </h5> 
+                    <br>
+                </div>
+                </a>
+            </div>
+            {% endfor %}
+            {% else %}
+                <h2> No Accomodations fit your search </h2><br>
+                <h3> Please go back and change your search to find Accomodations <h3><br>
+                <a href='/accomodations' style='float: center'>Go Back</a>
+            {% endif %}
     {% endif %}
 
 {% endblock %}

@@ -1,16 +1,6 @@
 from django.db import models
 from django.utils import timezone
 
-class IntegerRangeField(models.IntegerField):
-    def __init__(self, verbose_name=None, name=None, min_value=None, max_value=None, **kwargs):
-        self.min_value, self.max_value = min_value, max_value
-        models.IntegerField.__init__(self, verbose_name, name, **kwargs)
-
-    def formfield(self, **kwargs):
-        defaults = {'min_value': self.min_value, 'max_value':self.max_value}
-        defaults.update(kwargs)
-        return super(IntegerRangeField, self).formfield(**defaults)
-
 # Create your models here.
 class Location(models.Model):
 	City = models.CharField(max_length=30)
@@ -27,10 +17,14 @@ class Accomodation(models.Model):
 		('Hostel', 'Hostel'),
 		('Motel', 'Motel'),
 	]
+	AccomodationName = models.CharField(max_length=30, default=None)
 	AccomodationType = models.CharField(max_length=5, choices=Accom_Type_Choices, default='Hotel')
 	Rate = models.DecimalField(max_digits=9, decimal_places=2)
 	Discount = models.DecimalField(max_digits=2,decimal_places = 2)
 	LocationId = models.ForeignKey('Location', on_delete=models.CASCADE)
+
+	def __str__(self):
+		return self.AccomodationName
 
 class Transportation(models.Model):
 	FLIGHT = 'FLI'
@@ -69,6 +63,7 @@ class CarRental(models.Model):
 class Cruise(models.Model):
 	CruisePrice = models.IntegerField() 
 	CruiseNumber = models.IntegerField()
+	DepartureTime = models.DateTimeField(default=timezone.now)
 	TransportId = models.OneToOneField('Transportation', primary_key=True, on_delete=models.CASCADE)
 
 class Group(models.Model):
@@ -86,9 +81,9 @@ class Passenger(models.Model):
 
 class Payment(models.Model):
 	GroupLeaderId = models.ForeignKey('Passenger', on_delete = models.CASCADE)
-	CardNumber = models.IntegerField()
+	CardNumber = models.CharField(max_length=16)
 	PaymentAmount = models.IntegerField()
-	CardExpiryDate = models.DateField()
+	CardExpiryDate = models.CharField(max_length=5)
 
 class Airport(models.Model):
 	AirportCode = models.CharField(max_length=3)
