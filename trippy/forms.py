@@ -202,3 +202,14 @@ class PassengerForm(forms.Form):
         gender = cleaned_data.get('gender')
         if not (first_name or last_name or email or gender):
             raise forms.ValidationError('Invalid input')
+
+class CancellationForm(forms.Form):
+    email = forms.EmailField()
+    payment_id = forms.IntegerField()
+
+    def clean(self):
+        cleaned_data = super(CancellationForm, self).clean()
+        email = cleaned_data.get('email')
+        paymentid = cleaned_data.get('paymentid')
+        if not (email or payment_id):
+            raise forms.ValidationError('Please fill out all fields')

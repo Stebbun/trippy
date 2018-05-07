@@ -143,8 +143,7 @@ def payment(request):
                     'price' : price,
                     'pageheader' : header,
                 }
-        linkcont = '&guests='+str(guests)+"&accom="+request.GET.get('accom')+'&rooms='+rooms+'&price='+price+"&checkin="+checkin+"&checkout"
-        +checkout
+        linkcont = '&guests='+str(guests)+"&accom="+request.GET.get('accom')+'&rooms='+str(rooms)+'&price='+str(price)+"&checkin="+checkin+"&checkout="+checkout
     if request.method == 'POST':
         form = PaymentForm(request.POST)
         if form.is_valid():
@@ -380,3 +379,8 @@ def confirmation(request):
         }
 
     return render(request, 'trippy/confirmation.html', {'context' : context})
+
+def cancellation(request):
+    if request.method == 'POST':
+        pass
+    return render(request, 'trippy/cancellation.html', {'form' : form })
