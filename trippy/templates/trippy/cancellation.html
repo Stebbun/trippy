@@ -1,9 +1,14 @@
 {% extends "trippy/base.html" %}
 
+	{% block content %}
+	<form method="post" novalidate>
+    {% load widget_tweaks %}
+    {% csrf_token %}
+
     <div class="row" style="float: center">
-        <h2>{{ Cancel your Order }}</h2>
-        <h3> If you were satisfied with your purchase please fill out the fields with your order information you received
-        	at the confirmation page </h3>
+        	<h2>Cancel your Order</h2>
+        <h3> If you were unsatisfied with your purchase please fill out the fields with your order information you received
+        	at the confirmation page </h3><Br>
     </div>
 
     <div style="color: red;">
