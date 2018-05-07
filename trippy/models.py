@@ -79,6 +79,9 @@ class Passenger(models.Model):
 		("M", "Male"),
 	], default='F')
 
+	def __str__(self):
+		return FirstName + LastName
+
 class Payment(models.Model):
 	GroupId = models.ForeignKey('Group', on_delete = models.CASCADE, default=0)
 	CardNumber = models.CharField(max_length=16)
