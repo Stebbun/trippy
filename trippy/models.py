@@ -48,6 +48,9 @@ class Flight(models.Model):
 	DepartureAirport = models.ForeignKey('Airport', on_delete=models.CASCADE, related_name='Dest_%(class)s', default=0)
 	ArrivalTime = models.DateTimeField(default=timezone.now)
 	ArrivalAirport = models.ForeignKey('Airport', on_delete=models.CASCADE, default=0)
+	AvailFirstSeats = models.IntegerField(default = 30)
+	AvailBusinessSeats = models.IntegerField(default = 60)
+	AvailEconomySeats = models.IntegerField(default = 240)
 	TransportId = models.OneToOneField('Transportation', primary_key=True, on_delete=models.CASCADE)
 
 	def __str__(self):
@@ -95,6 +98,7 @@ class Payment(models.Model):
 	CardNumber = models.CharField(max_length=16)
 	PaymentAmount = models.IntegerField()
 	CardExpiryDate = models.CharField(max_length=5)
+	Type = models.CharField(max_length=15, blank=True)
 
 	def __str__(self):
 		return "[" + str(self.pk) + "]"+' Group ' + str(self.GroupId.pk) + ' ('+ self.CardNumber[-4:] + " $" + str(self.PaymentAmount)+')'
@@ -112,3 +116,8 @@ class CarRentalTime(models.Model):
 	Driver = models.ForeignKey('Passenger', on_delete = models.CASCADE)
 	StartRentalTime = models.DateField(default=timezone.now)
 	EndRentalTime = models.DateField(default=timezone.now)
+
+class FlightGroup(models.Model):
+	GroupId = models.ForeignKey('Group', on_delete = models.CASCADE, default=0)
+	FlightId = models.ForeignKey('Flight', on_delete = models.CASCADE, default=0)
+	FlightClass = models.CharField(max_length=20, default='Economy')

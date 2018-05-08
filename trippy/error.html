@@ -1,0 +1,12 @@
+{% extends "trippy/base.html" %}
+
+{% block content %}
+    {% load widget_tweaks %}
+    {% csrf_token %}
+
+    <h2> Error processing your payment </h2>
+    <h3> Your order did not go through </h3>
+    <h4> One or both of your flights were filled </h4>
+    <h4> Please click <a href='/flight'>here</a> to go start a new flight search
+
+{% endif %}

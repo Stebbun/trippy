@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.template import RequestContext
 from .forms import FlightForm, PaymentForm, AccomodationForm, PassengerForm, RentalForm, CancellationForm #,PackageForm
-from .models import Airport, Flight, Passenger, Group, Location, Accomodation, Payment, CarRental, CarRentalTime
+from .models import Airport, Flight, Passenger, Group, Location, Accomodation, Payment, CarRental, CarRentalTime, FlightGroup
 import datetime
 
 def strtoDate(string):
@@ -169,15 +169,70 @@ def payment(request):
         if form.is_valid():
             groupid = int(request.GET.get('groupid'))
             pay = Payment(GroupId_id =groupid, Email=form['email'].data,CardNumber=form['card_number'].data, PaymentAmount=price,
-                CardExpiryDate=form['card_expiry_date'].data)
+                CardExpiryDate=form['card_expiry_date'].data, Type=rtype)
             pay.save()
-            link = '/confirmation/?type='+rtype + linkcont+'&paymentid='+str(pay.pk)+'&groupid='+str(groupid)
+            if rtype == 'flight':
+                tickets = context.get('tickets')
+                toflightfail = False
+                fromflightfail = False
+                toflight = Flight.objects.filter(pk=int(request.GET.get('toflight')))[0]
+                fromflight = None
+                if context.get('fromflight') != None:
+                    fromflight = Flight.objects.filter(pk=int(request.GET.get('fromflight')))[0]
+                if context.get('flight_class') == 'First Class':
+                    if toflight.AvailFirstSeats - tickets < 0:
+                        toflightfail = True
+                    else:
+                        toflight.AvailFirstSeats -= tickets
+                        toflight.save()
+                    if context.get('fromflight') != None:
+                        if fromflight.AvailFirstSeats - tickets < 0:
+                            fromflightfail = True
+                        else:
+                            fromflight.AvailFirstSeats -= tickets
+                            fromflight.save()
+                elif context.get('flight_class') == 'Business Class':
+                    if toflight.AvailBusinessSeats - tickets < 0:
+                        toflightfail = True
+                    else:
+                        toflight.AvailBusinessSeats -= tickets
+                        toflight.save()
+                    if context.get('fromflight') != None:
+                        if fromflight.AvailBusinessSeats - tickets < 0:
+                            fromflightfail = True
+                        else:
+                            fromflight.AvailBusinessSeats -= tickets
+                            fromflight.save()
+                else:
+                    if toflight.AvailEconomySeats - tickets < 0:
+                        toflightfail = True
+                    else:
+                        toflight.AvailEconomySeats -= tickets
+                        toflight.save()
+                    if context.get('fromflight') != None:
+                        if fromflight.AvailEconomySeats - tickets < 0:
+                            fromflightfail = True
+                        else:
+                            fromflight.AvailEconomySeats -= tickets
+                            fromflight.save()
+                if not(toflightfail and fromflightfail):
+                    link = '/confirmation/?type='+rtype + linkcont+'&paymentid='+str(pay.pk)+'&groupid='+str(groupid)
+                    if fromflight != None:
+                        retflightgroup = FlightGroup(GroupId_id=groupid, FlightId_id=int(request.GET.get('fromflight')), FlightClass=context.get('flight_class'))
+                        retflightgroup.save()
+                    toflightgroup = FlightGroup(GroupId_id=groupid, FlightId_id=int(request.GET.get('toflight')), FlightClass=context.get('flight_class'))
+                    toflightgroup.save()
+                else:
+                    group = Group.objects.get(pk=groupid)[0]
+                    group.delete()
+                    link = '/error/&type=flight'
             return redirect(link)
         else:
             form = PaymentForm()
     else:
         form = PaymentForm()
     return render(request, 'trippy/payment.html', {'form' : form, 'context': context })
+
 
 def information(request):
     header = 'Information'
@@ -206,6 +261,12 @@ def information(request):
             retdate = rdate.split('-')
         dflights = Flight.objects.filter(DepartureAirport_id=src)
         dflights = dflights.filter(DepartureTime__contains=datetime.date(int(srcdate[0]), int(srcdate[1]), int(srcdate[2])))
+        if flight_class == ('First Class'):
+            dflights = dflights.filter(AvailFirstSeats__gte=int(tickets))
+        elif flight_class == ('Business Class'):
+            dflights = dflights.filter(AvailBusinessSeats__gte=int(tickets))
+        else:
+            dflights = dflights.filter(AvailEconomySeats__gte=(tickets))
         rflights = None
         if flight_class == 'First Class':
             classratio = int(tickets)*2
@@ -218,6 +279,12 @@ def information(request):
         if retdate != None:
             rflights = Flight.objects.filter(ArrivalAirport_id=src)
             rflights = rflights.filter(ArrivalTime__contains=datetime.date(int(retdate[0]), int(retdate[1]), int(retdate[2])))
+            if flight_class == ('First Class'):
+                rflights = rflights.filter(AvailFirstSeats__gte=int(tickets))
+            elif flight_class == ('Business Class'):
+                rflights = rflights.filter(AvailBusinessSeats__gte=int(tickets))
+            else:
+                rflights = rflights.filter(AvailEconomySeats__gte=int(tickets))
         if rflights is None or len(rflights) == 0:
             rflights = None
         context = { 'rtype' : rtype,
@@ -460,6 +527,21 @@ def cancellation(request):
                 linkcont = '?invalid=true'
             else:
                 linkcont = '?invalid=false&paymentid='+str(paymentid)
+                if (receipt.Type=='flight'):
+                    group = receipt.GroupId_id
+                    tickets = Group.objects.filter(pk=group)[0]
+                    tickets = tickets.size
+                    flightgroup = FlightGroup.objects.filter(GroupId_id=group)
+                    for fg in flightgroup:
+                        flight = Flight.objects.filter(pk=fg.FlightId_id)[0]
+                        if (fg.FlightClass == 'First Class'):
+                            flight.AvailFirstSeats += tickets
+                        elif (fg.FlightClass == 'Business Class'):
+                            flight.AvailBusinessSeats += tickets
+                        else:
+                            flight.AvailEconomySeats += tickets
+                        flight.save()
+                        fg.delete()
                 receipt.delete()
             return redirect('/cancellationconfirmation/'+linkcont)
     else:
