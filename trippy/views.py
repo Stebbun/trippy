@@ -281,6 +281,15 @@ def information_rental(request, rtype):
     duration = (strtoDate(req_dropoff_date)-strtoDate(req_pickup_date)).days
 
     rentals = CarRental.objects.filter(Location_id=pickup_location.pk)
+    nonavaila = CarRentalTime.objects.filter(StartRentalTime__lte=strtoDate(req_dropoff_date))
+    nonavaila = nonavaila.filter(StartRentalTime__gte=strtoDate(req_pickup_date))
+    nonavailb = CarRentalTime.objects.filter(EndRentalTime__lte=strtoDate(req_dropoff_date))
+    nonavailb = nonavailb.filter(StartRentalTime__gte=strtoDate(req_pickup_date))
+    nonavailc = CarRentalTime.objects.filter(StartRentalTime__lte=strtoDate(req_pickup_date))
+    nonavailc = nonavailc.filter(EndRentalTime__gte=strtoDate(req_dropoff_date))
+    nonavail = nonavaila | nonavailb | nonavailc
+    for nona in nonavail:
+        rentals=rentals.exclude(pk=nona.Car_id)
     if len(rentals) == 0:
         rentals = None
 
@@ -416,27 +425,32 @@ def confirmation(request):
             'pageheader' : header,
         }
     elif rtype == 'rental':
-        rental = int(request.GET.get('rental'))
-        rental = CarRental.objects.filter(pk=rental)[0]
-        print(rental)
+        r = int(request.GET.get('rental'))
+        rental = CarRental.objects.filter(pk=r)[0]
+        groupid = int(request.GET.get('groupid'))
+        srcdate = request.GET.get('srcdate')
+        retdate = request.GET.get('retdate')
+        driver = Passenger.objects.filter(GroupId_id=groupid)[0]
+        rentalTime = CarRentalTime(Car_id=r, Driver_id=driver.pk, StartRentalTime=strtoDate(srcdate), EndRentalTime=strtoDate(retdate))
+        rentalTime.save()
         context = {
             'rtype' : rtype,
             'src' : request.GET.get('src'),
             'dest' : request.GET.get('dest'),
-            'srcdate' : request.GET.get('srcdate'),
-            'retdate' : request.GET.get('retdate'),
+            'srcdate' : srcdate,
+            'retdate' : retdate,
             'rental' : rental,
             'price' : request.GET.get('price'),
             'paymentid' : request.GET.get('paymentid'),
             'passengers' : passengers,
             'pageheader' : header,
+            'groupid' : groupid
         }
 
     return render(request, 'trippy/confirmation.html', {'context' : context})
 
 def cancellation(request):
     if request.method == 'POST':
-        print("I am here")
         form = CancellationForm(request.POST)
         if form.is_valid():
             paymentid = form['payment_id'].data
